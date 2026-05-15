@@ -193,70 +193,70 @@ const teams = [{ score: 0, hand: [] }, { score: 0, hand: [] }, { score: 0, hand:
 
 const mapConfig = [
     // --- 🟥 左上卡片 (red - quad: 1) ---
-    { id: 101, quad: 1, x: 4, y: 1, name: "起1", type: "start-team0", next: [103] },
-    { id: 102, quad: 1, x: 3, y: 2, name: "0", type: "ocean", next: [104] },
-    { id: 103, quad: 1, x: 4, y: 2, name: "0", type: "ocean", next: [102, 105] },
-    { id: 104, quad: 1, x: 2, y: 3, name: "0", type: "ocean", next: [107, 102] },
-    { id: 105, quad: 1, x: 5, y: 3, name: "0", type: "ocean", next: [109, 103] },
-    { id: 106, quad: 1, x: 1, y: 4, name: "0", type: "ocean", next: [107] },
-    { id: 107, quad: 1, x: 2, y: 4, name: "0", type: "ocean", next: [104, 108, 106] },
-    { id: 108, quad: 1, x: 3, y: 4, name: "0", type: "ocean", next: [111, 107] },
-    { id: 109, quad: 1, x: 6, y: 4, name: "0", type: "ocean", next: [110, 105, 112] },
-    { id: 110, quad: 1, x: 7, y: 4, name: "0", type: "ocean", next: [109, 201] },
-    { id: 111, quad: 1, x: 4, y: 5, name: "0", type: "ocean", next: [113, 108] },
-    { id: 112, quad: 1, x: 6, y: 5, name: "0", type: "ocean", next: [114, 109] },
-    { id: 113, quad: 1, x: 4, y: 6, name: "0", type: "ocean", next: [115, 111] },
-    { id: 114, quad: 1, x: 6, y: 6, name: "0", type: "ocean", next: [116, 112] },
-    { id: 115, quad: 1, x: 4, y: 7, name: "0", type: "ocean", next: [116, 205] },
-    { id: 116, quad: 1, x: 7, y: 7, name: "終2", type: "station station-t0", next: [114] },
+    { id: 101, quad: 1, x: 4, y: 1, name: "R", type: "start-team0", next: [103] },
+    { id: 102, quad: 1, x: 3, y: 2, name: " ", type: "ocean", next: [104] },
+    { id: 103, quad: 1, x: 4, y: 2, name: " ", type: "ocean", next: [102, 105] },
+    { id: 104, quad: 1, x: 2, y: 3, name: " ", type: "ocean", next: [107, 102] },
+    { id: 105, quad: 1, x: 5, y: 3, name: " ", type: "ocean", next: [109, 103] },
+    { id: 106, quad: 1, x: 1, y: 4, name: " ", type: "ocean", next: [107] },
+    { id: 107, quad: 1, x: 2, y: 4, name: " ", type: "ocean", next: [104, 108, 106] },
+    { id: 108, quad: 1, x: 3, y: 4, name: " ", type: "ocean", next: [111, 107] },
+    { id: 109, quad: 1, x: 6, y: 4, name: " ", type: "ocean", next: [110, 105, 112] },
+    { id: 110, quad: 1, x: 7, y: 4, name: " ", type: "ocean", next: [109, 201] },
+    { id: 111, quad: 1, x: 4, y: 5, name: " ", type: "ocean", next: [113, 108] },
+    { id: 112, quad: 1, x: 6, y: 5, name: " ", type: "ocean", next: [114, 109] },
+    { id: 113, quad: 1, x: 4, y: 6, name: " ", type: "ocean", next: [115, 111] },
+    { id: 114, quad: 1, x: 6, y: 6, name: " ", type: "ocean", next: [116, 112] },
+    { id: 115, quad: 1, x: 4, y: 7, name: " ", type: "ocean", next: [113, 310] },
+    { id: 116, quad: 1, x: 7, y: 7, name: "R", type: "station station-t0", next: [114] },
 
     // --- ⚪ 右上卡片 (white - quad: 2) ---
-    { id: 201, quad: 2, x: 1, y: 4, name: "0", type: "ocean", next: [202, 110] },
-    { id: 202, quad: 2, x: 2, y: 3, name: "0", type: "ocean", next: [203, 201] },
-    { id: 203, quad: 2, x: 3, y: 3, name: "0", type: "ocean", next: [206, 202] },
-    { id: 204, quad: 2, x: 4, y: 1, name: "0", type: "ocean", next: [205] },
-    { id: 205, quad: 2, x: 4, y: 2, name: "0", type: "ocean", next: [206, 204] },
-    { id: 206, quad: 2, x: 4, y: 3, name: "0", type: "ocean", next: [207, 205, 203] },
-    { id: 207, quad: 2, x: 4, y: 4, name: "0", type: "ocean", next: [208, 206] },
-    { id: 208, quad: 2, x: 4, y: 5, name: "0", type: "ocean", next: [209, 207, 211] },
-    { id: 209, quad: 2, x: 4, y: 6, name: "0", type: "ocean", next: [210, 208] },
-    { id: 210, quad: 2, x: 4, y: 7, name: "0", type: "ocean", next: [209, 413] },
-    { id: 211, quad: 2, x: 5, y: 5, name: "0", type: "ocean", next: [212, 208] },
-    { id: 212, quad: 2, x: 6, y: 4, name: "0", type: "ocean", next: [213, 211] },
-    { id: 213, quad: 2, x: 7, y: 4, name: "0", type: "ocean", next: [212] },
+    { id: 201, quad: 2, x: 1, y: 4, name: " ", type: "ocean", next: [202, 110] },
+    { id: 202, quad: 2, x: 2, y: 3, name: " ", type: "ocean", next: [203, 201] },
+    { id: 203, quad: 2, x: 3, y: 3, name: " ", type: "ocean", next: [206, 202] },
+    { id: 204, quad: 2, x: 4, y: 1, name: " ", type: "ocean", next: [205] },
+    { id: 205, quad: 2, x: 4, y: 2, name: " ", type: "ocean", next: [206, 204] },
+    { id: 206, quad: 2, x: 4, y: 3, name: " ", type: "ocean", next: [207, 205, 203] },
+    { id: 207, quad: 2, x: 4, y: 4, name: " ", type: "ocean", next: [208, 206] },
+    { id: 208, quad: 2, x: 4, y: 5, name: " ", type: "ocean", next: [209, 207, 211] },
+    { id: 209, quad: 2, x: 4, y: 6, name: " ", type: "ocean", next: [210, 208] },
+    { id: 210, quad: 2, x: 4, y: 7, name: " ", type: "ocean", next: [209, 413] },
+    { id: 211, quad: 2, x: 5, y: 5, name: " ", type: "ocean", next: [212, 208] },
+    { id: 212, quad: 2, x: 6, y: 4, name: " ", type: "ocean", next: [213, 211] },
+    { id: 213, quad: 2, x: 7, y: 4, name: " ", type: "ocean", next: [212] },
 
     // --- 🟩 左下卡片 (green - quad: 3) ---
-    { id: 301, quad: 3, x: 4, y: 7, name: "起3", type: "start-team2", next: [302] },
-    { id: 302, quad: 3, x: 4, y: 6, name: "0", type: "ocean", next: [303] },
-    { id: 303, quad: 3, x: 4, y: 5, name: "0", type: "ocean", next: [304, 302] },
-    { id: 304, quad: 3, x: 5, y: 4, name: "0", type: "ocean", next: [305, 303, 307] },
-    { id: 305, quad: 3, x: 6, y: 4, name: "0", type: "ocean", next: [306, 304] },
-    { id: 306, quad: 3, x: 7, y: 4, name: "0", type: "ocean", next: [305, 407] },
-    { id: 307, quad: 3, x: 5, y: 3, name: "0", type: "ocean", next: [308, 309, 304] },
-    { id: 308, quad: 3, x: 6, y: 2, name: "0", type: "ocean", next: [314, 307] },
-    { id: 309, quad: 3, x: 4, y: 2, name: "0", type: "ocean", next: [307, 311, 310] },
-    { id: 310, quad: 3, x: 4, y: 1, name: "0", type: "ocean", next: [309, 115] },
-    { id: 311, quad: 3, x: 3, y: 2, name: "0", type: "ocean", next: [309, 312] },
-    { id: 312, quad: 3, x: 2, y: 3, name: "0", type: "ocean", next: [313] },
-    { id: 313, quad: 3, x: 1, y: 4, name: "0", type: "ocean", next: [312] },
-    { id: 314, quad: 3, x: 7, y: 1, name: "終1", type: "station station-t2", next: [308] },
+    { id: 301, quad: 3, x: 4, y: 7, name: "G", type: "start-team2", next: [302] },
+    { id: 302, quad: 3, x: 4, y: 6, name: " ", type: "ocean", next: [303] },
+    { id: 303, quad: 3, x: 4, y: 5, name: " ", type: "ocean", next: [304, 302] },
+    { id: 304, quad: 3, x: 5, y: 4, name: " ", type: "ocean", next: [305, 303, 307] },
+    { id: 305, quad: 3, x: 6, y: 4, name: " ", type: "ocean", next: [306, 304] },
+    { id: 306, quad: 3, x: 7, y: 4, name: " ", type: "ocean", next: [305, 407] },
+    { id: 307, quad: 3, x: 5, y: 3, name: " ", type: "ocean", next: [308, 309, 304] },
+    { id: 308, quad: 3, x: 6, y: 2, name: " ", type: "ocean", next: [314, 307] },
+    { id: 309, quad: 3, x: 4, y: 2, name: " ", type: "ocean", next: [307, 311, 310] },
+    { id: 310, quad: 3, x: 4, y: 1, name: " ", type: "ocean", next: [309, 115] },
+    { id: 311, quad: 3, x: 3, y: 2, name: " ", type: "ocean", next: [309, 312] },
+    { id: 312, quad: 3, x: 2, y: 3, name: " ", type: "ocean", next: [313] },
+    { id: 313, quad: 3, x: 1, y: 4, name: " ", type: "ocean", next: [312] },
+    { id: 314, quad: 3, x: 7, y: 1, name: "G", type: "station station-t2", next: [308] },
 
     // --- 🟦 右下卡片 (blue - quad: 4) ---
-    { id: 401, quad: 4, x: 4, y: 7, name: "起2", type: "start-team1", next: [402] },
-    { id: 402, quad: 4, x: 4, y: 6, name: "0", type: "ocean", next: [403] },
-    { id: 403, quad: 4, x: 4, y: 5, name: "0", type: "ocean", next: [404] },
-    { id: 404, quad: 4, x: 3, y: 4, name: "0", type: "ocean", next: [405, 408] },
-    { id: 405, quad: 4, x: 3, y: 3, name: "0", type: "ocean", next: [404, 411, 415] },
-    { id: 406, quad: 4, x: 5, y: 3, name: "0", type: "ocean", next: [415, 409] },
-    { id: 407, quad: 4, x: 1, y: 4, name: "0", type: "ocean", next: [408, 306] },
-    { id: 408, quad: 4, x: 2, y: 4, name: "0", type: "ocean", next: [407, 404] },
-    { id: 410, quad: 4, x: 7, y: 4, name: "0", type: "ocean", next: [409] },
-    { id: 411, quad: 4, x: 2, y: 2, name: "0", type: "ocean", next: [414, 405] },
-    { id: 412, quad: 4, x: 4, y: 2, name: "0", type: "ocean", next: [413, 415] },
-    { id: 413, quad: 4, x: 4, y: 1, name: "0", type: "ocean", next: [412, 210] },
-    { id: 409, quad: 4, x: 6, y: 4, name: "0", type: "ocean", next: [410, 406] }, 
-    { id: 415, quad: 4, x: 4, y: 3, name: "0", type: "ocean", next: [406, 405, 412] },
-    { id: 414, quad: 4, x: 1, y: 1, name: "終3", type: "station station-t1", next: [411] }
+    { id: 401, quad: 4, x: 4, y: 7, name: "B", type: "start-team1", next: [402] },
+    { id: 402, quad: 4, x: 4, y: 6, name: " ", type: "ocean", next: [403] },
+    { id: 403, quad: 4, x: 4, y: 5, name: " ", type: "ocean", next: [404] },
+    { id: 404, quad: 4, x: 3, y: 4, name: " ", type: "ocean", next: [405, 408] },
+    { id: 405, quad: 4, x: 3, y: 3, name: " ", type: "ocean", next: [404, 411, 415] },
+    { id: 406, quad: 4, x: 5, y: 3, name: " ", type: "ocean", next: [415, 409] },
+    { id: 407, quad: 4, x: 1, y: 4, name: " ", type: "ocean", next: [408, 306] },
+    { id: 408, quad: 4, x: 2, y: 4, name: " ", type: "ocean", next: [407, 404] },
+    { id: 410, quad: 4, x: 7, y: 4, name: " ", type: "ocean", next: [409] },
+    { id: 411, quad: 4, x: 2, y: 2, name: " ", type: "ocean", next: [414, 405] },
+    { id: 412, quad: 4, x: 4, y: 2, name: " ", type: "ocean", next: [413, 415] },
+    { id: 413, quad: 4, x: 4, y: 1, name: " ", type: "ocean", next: [412, 210] },
+    { id: 409, quad: 4, x: 6, y: 4, name: " ", type: "ocean", next: [410, 406] }, 
+    { id: 415, quad: 4, x: 4, y: 3, name: " ", type: "ocean", next: [406, 405, 412] },
+    { id: 414, quad: 4, x: 1, y: 1, name: "B", type: "station station-t1", next: [411] }
 ];
 
 function showMsg(m, cb) { if(m) setTimeout(() => { alert(m); if(cb) cb(); }, 100); }
@@ -372,27 +372,50 @@ function endMovePhase() {
 function checkGrid(player) {
     const c = mapConfig.find(cfg => cfg.id === player.position);
     if (!c) return;
+
+    // 1. 撿垃圾判定
     if((c.type === "ocean" || c.type === "event-cell") && c.garbage) {
-        if(player.bag.length >= 3) { showMsg(`${player.name} 背包滿了！`); }
-        else { player.bag.push(c.garbage); showMsg(`${player.name} 撿到 ${c.garbage.name}`); c.garbage = null; document.querySelector(`#cell-${player.position} .cell-info`).innerText = ""; }
+        if(player.bag.length >= 3) { 
+            showMsg(`${player.name} 背包滿了！`); 
+        } else { 
+            player.bag.push(c.garbage); 
+            showMsg(`${player.name} 撿到 ${c.garbage.name}`); 
+            c.garbage = null; 
+            document.querySelector(`#cell-${player.position} .cell-info`).innerText = ""; 
+        }
     }
+
+    // 2. 專屬顏色回收站判定 (修正重點 🚨)
     if(c.type.includes("station") && player.bag.length > 0) {
-        let sc = player.bag.reduce((s, g) => s + g.score, 0); teams[player.team].score += sc; player.bag = [];
-        showMsg("安全抵達終點回收站！獲得 " + sc + " 分！");
+        // 檢查該站點是否符合玩家的隊伍顏色
+        let isCorrectStation = false;
+        if (player.team === 0 && c.type.includes("station-t0")) isCorrectStation = true; // 紅隊
+        if (player.team === 1 && c.type.includes("station-t1")) isCorrectStation = true; // 藍隊
+        if (player.team === 2 && c.type.includes("station-t2")) isCorrectStation = true; // 綠隊
+
+        if (isCorrectStation) {
+            let sc = player.bag.reduce((s, g) => s + g.score, 0); 
+            teams[player.team].score += sc; 
+            player.bag = [];
+            showMsg(`🎉 成功抵達本隊專屬回收站！回收成功，獲得 ${sc} 分！`);
+        } else {
+            showMsg(`⚠️ 這是其他隊伍的回收站！${player.name} 無法在此回收垃圾。`);
+        }
     }
+
+    // 3. 事件格子判定
     if(c.type === "event-cell" || c.name === "⚡") {
         const e = eventPool[Math.floor(Math.random()*eventPool.length)];
-        if(e.id === "evt_whale") { pendingJudgePlayer = player; document.getElementById("judge-box").style.display = "block"; }
-        else {
+        if(e.id === "evt_whale") { 
+            pendingJudgePlayer = player; 
+            document.getElementById("judge-box").style.display = "block"; 
+        } else {
             showMsg(`⚡事件：${e.name}\n${e.desc}`);
             if(e.id === "evt_straw") { teams[player.team].score += 1; }
             else if(e.id === "evt_oil") { players.forEach(pl => pl.hp = Math.max(0, pl.hp - 1)); globalMaxSteps = 2; }
             else if(e.id === "evt_net") { let target = players[Math.floor(Math.random()*6)]; if(target.id!==player.id) target.trap = true; }
             else if(e.id === "evt_sonar") { globalSonarEffect = 2; }
-            else if(e.id === "evt_earthquake") { 
-                // 海牛翻身：修正為安全的隨機地圖節點
-                player.position = mapConfig[Math.floor(Math.random()*mapConfig.length)].id; 
-            }
+            else if(e.id === "evt_earthquake") { player.position = mapConfig[Math.floor(Math.random()*mapConfig.length)].id; }
             else if(e.id === "evt_turtles") { teams[player.team].score = Math.max(0, teams[player.team].score - 3); }
         }
     }
