@@ -129,9 +129,9 @@ button:disabled { background: #555; color: #888; box-shadow: none; }
         </div>
         <div id="choice-overlay">🗺️ 請直接點擊棋盤上閃爍黃光的圓圈！</div>
         <div class="center-scores">
-            <div class="score-item" style="color:var(--accent-red)">G：<span id="t0-score">0</span></div>
-            <div class="score-item" style="color:var(--accent-blue)">B：<span id="t1-score">0</span></div>
-            <div class="score-item" style="color:var(--accent-green)">G：<span id="t2-score">0</span></div>
+            <div class="score-item" style="color:var(--accent-red)">紅隊：<span id="t0-score">0</span></div>
+            <div class="score-item" style="color:var(--accent-blue)">藍隊：<span id="t1-score">0</span></div>
+            <div class="score-item" style="color:var(--accent-green)">綠隊：<span id="t2-score">0</span></div>
         </div>
         <div id="p-hp-info" class="center-hp">加載中...</div>
     </div>
@@ -163,7 +163,6 @@ button:disabled { background: #555; color: #888; box-shadow: none; }
 </div>
 
 <script>
-// 所有原本的核心 JavaScript 邏輯完全保留，僅將按鈕禁用的文字與反應速度進行了手機端的防快點優化。
 const garbageTypes = [
     { key: "tire", name: "輪胎", score: 5, icon: "🛞" }, { key: "net", name: "漁網", score: 4, icon: "🕸️" },
     { key: "bag", name: "塑膠袋", score: 3, icon: "🛍️" }, { key: "bottle", name: "寶特瓶", score: 2, icon: "🍾" },
@@ -183,7 +182,7 @@ const eventPool = [
 ];
 
 let currentTurnPlayer = 0; let selectedCardIndex = null; let globalMaxSteps = 3; let globalSonarEffect = 0; let pendingJudgePlayer = null;
-let remainingSteps = 0;
+let remainingSteps = 0; let gameEnded = false;
 
 const players = [
     { id: 1, name: "P1", team: 0, hp: 5, position: 101, trap: false, bag: [] }, { id: 2, name: "P2", team: 0, hp: 5, position: 101, trap: false, bag: [] },
@@ -299,6 +298,7 @@ function updateUI() {
     document.getElementById("p-hp-info").innerHTML = players.map(p => `<div>${p.name}:${p.hp}❤ ${p.trap?'🕸️':''}(🎒${p.bag.length}/3)</div>`).join("");
     document.getElementById("current-turn").innerText = `${players[currentTurnPlayer].name} 的回合`;
     renderHand();
+    checkAllGarbageCleared();
 }
 
 function processPlayerMovement(player, steps) {
@@ -310,7 +310,7 @@ function processPlayerMovement(player, steps) {
 function executeStepByStep(player) {
     if (remainingSteps <= 0) {
         checkGrid(player);
-        if (!pendingJudgePlayer) endMovePhase();
+        if (!pendingJudgePlayer && !gameEnded) endMovePhase();
         return;
     }
 
@@ -325,7 +325,7 @@ function executeStepByStep(player) {
         player.position = cellData.next[0];
         remainingSteps--;
         updateUI();
-        setTimeout(() => { executeStepByStep(player); }, 220); // 手機端輕微加快跑格速度
+        setTimeout(() => { executeStepByStep(player); }, 220);
     } else {
         document.getElementById("choice-overlay").style.display = "block";
         cellData.next.forEach(nextId => {
@@ -372,7 +372,7 @@ function endMovePhase() {
 function checkGrid(player) {
     const c = mapConfig.find(cfg => cfg.id === player.position);
     if (!c) return;
-    if(c.type === "ocean" && c.garbage) {
+    if((c.type === "ocean" || c.type === "event-cell") && c.garbage) {
         if(player.bag.length >= 3) { showMsg(`${player.name} 背包滿了！`); }
         else { player.bag.push(c.garbage); showMsg(`${player.name} 撿到 ${c.garbage.name}`); c.garbage = null; document.querySelector(`#cell-${player.position} .cell-info`).innerText = ""; }
     }
@@ -387,9 +387,12 @@ function checkGrid(player) {
             showMsg(`⚡事件：${e.name}\n${e.desc}`);
             if(e.id === "evt_straw") { teams[player.team].score += 1; }
             else if(e.id === "evt_oil") { players.forEach(pl => pl.hp = Math.max(0, pl.hp - 1)); globalMaxSteps = 2; }
-            else if(e.id === "evt_net") { let t = players[Math.floor(Math.random()*6)]; if(t.id!==player.id) t.trap = true; }
+            else if(e.id === "evt_net") { let target = players[Math.floor(Math.random()*6)]; if(target.id!==player.id) target.trap = true; }
             else if(e.id === "evt_sonar") { globalSonarEffect = 2; }
-            else if(e.id === "evt_earthquake") { players.forEach(pl => pl.position = mapConfig[Math.floor(Math.random()*mapConfig.length)].id); }
+            else if(e.id === "evt_earthquake") { 
+                // 海牛翻身：修正為安全的隨機地圖節點
+                player.position = mapConfig[Math.floor(Math.random()*mapConfig.length)].id; 
+            }
             else if(e.id === "evt_turtles") { teams[player.team].score = Math.max(0, teams[player.team].score - 3); }
         }
     }
@@ -406,18 +409,42 @@ function renderHand() {
 
 function playCard() {
     const p = players[currentTurnPlayer]; const team = teams[p.team]; const c = team.hand[selectedCardIndex];
-    if(c.id === "shrimp") { processPlayerMovement(p, 2); }
-    else if(c.id === "shark") { processPlayerMovement(p, 4); }
+    
+    if(c.id === "shrimp") { 
+        processPlayerMovement(p, 2); 
+    }
+    else if(c.id === "shark") { 
+        processPlayerMovement(p, 4); 
+    }
     else {
         if(c.id === "starfish") { p.hp = Math.min(5, p.hp + 1); }
-        else if(c.id === "whale") { players.filter(pl => pl.team === p.team).forEach(pl => pl.hp = 5); }
-        else if(c.id === "octopus") { let ts = players.filter(pl => pl.team !== p.team); ts[Math.floor(Math.random()*ts.length)].trap = true; }
+        else if(c.id === "whale") { players.forEach(pl => pl.hp = 5); showMsg("全體玩家血量補滿！"); }
+        else if(c.id === "turtle") { showMsg("本輪將免疫所有負面事件效果！"); }
+        else if(c.id === "octopus") { 
+            let target = players[Math.floor(Math.random()*6)]; 
+            while(target.team === p.team) target = players[Math.floor(Math.random()*6)]; 
+            target.trap = true; showMsg(`${target.name} 被章魚墨困住了！`); 
+        }
         else if(c.id === "shell") {
-            let nearest = null; let minDist = Infinity;
-            mapConfig.forEach(c => { if (c.garbage) { let dist = Math.abs(c.x - mapConfig.find(mc => mc.id === p.position).x) + Math.abs(c.y - mapConfig.find(mc => mc.id === p.position).y); if (dist < minDist) { minDist = dist; nearest = c; } } });
-            if (nearest) { p.position = nearest.id; p.bag.push(nearest.garbage); showMsg(`${p.name} 使用貝感心傳送並撿到 ${nearest.garbage.name}`); nearest.garbage = null; document.querySelector(`#cell-${nearest.id} .cell-info`).innerText = ""; updateUI(); }
+            let nearestGarbageCell = null; let minDist = Infinity;
+            mapConfig.forEach(cell => {
+                if (cell.garbage) {
+                    const currentCell = mapConfig.find(m => m.id === p.position);
+                    const dist = Math.abs(cell.x - currentCell.x) + Math.abs(cell.y - currentCell.y);
+                    if (dist < minDist) { minDist = dist; nearestGarbageCell = cell; }
+                }
+            });
+            if (nearestGarbageCell) {
+                p.position = nearestGarbageCell.id; 
+                showMsg(`傳送成功！`);
+                checkGrid(p);
+            } else { showMsg("附近沒有垃圾可以撿了！"); }
         }
-        }
+        // 扣除並補發卡片，並流暢切換回合
+        team.hand.splice(selectedCardIndex, 1); 
+        team.hand.push(cardPool[Math.floor(Math.random()*cardPool.length)]);
+        endTurn();
+    }
 }
 
 function handleJudge(win) {
@@ -427,11 +454,32 @@ function handleJudge(win) {
 }
 
 function skipCard() { endTurn(); }
+
 function endTurn() {
     currentTurnPlayer = (currentTurnPlayer + 1) % players.length; selectedCardIndex = null;
     document.getElementById("roll-btn").disabled = false; document.getElementById("card-btn").disabled = true;
     document.getElementById("skip-card-btn").disabled = true; document.getElementById("dice-result").innerText = "";
     updateUI();
+}
+
+function checkAllGarbageCleared() {
+    if (gameEnded) return;
+    const remainingGarbage = mapConfig.filter(cell => cell.garbage).length;
+    if (remainingGarbage === 0) {
+        gameEnded = true;
+        document.getElementById("roll-btn").disabled = true;
+        document.getElementById("card-btn").disabled = true;
+        document.getElementById("skip-card-btn").disabled = true;
+        
+        let winnerTeam = 0; let maxScore = -1;
+        for(let i=0; i<3; i++) {
+            if(teams[i].score > maxScore) { maxScore = teams[i].score; winnerTeam = i; }
+        }
+        const teamNames = ["紅隊", "藍隊", "綠隊"];
+        setTimeout(() => {
+            alert(`🎉 遊戲結束！海底垃圾已全數清理乾淨！\n🏆 恭喜最高分隊伍：【${teamNames[winnerTeam]}】獲得勝利！`);
+        }, 500);
+    }
 }
 
 initMapData();
