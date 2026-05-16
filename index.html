@@ -156,19 +156,19 @@ body {
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 .card-option.selected { 
-    border: 10px solid #f59e0b; 
+    border: 2.5px solid #f59e0b; 
     background: #f59e0b; 
     color: #000; 
 }
 
-/* --- 內收式詳細說明抽屜（平常隱藏，點擊技能名稱才彈出） --- */
+/* --- 內收式詳細說明抽屜 --- */
 #desc-drawer {
     position: fixed;
     bottom: 88px; 
     left: 50%;
     transform: translateX(-50%) translateY(180%); 
-    width: 100%;
-    max-width: 500px;
+    width: 94%;
+    max-width: 450px;
     background: #ffffff;
     color: #222;
     padding: 10px 14px;
@@ -179,23 +179,25 @@ body {
     font-size: 15px;
     border: 2px solid #f59e0b;
 }
-#desc-drawer.expanded {
-    transform: translateX(-50%) translateY(0); 
-}
-.drawer-close-btn {
-    float: right;
-    background: #ddd;
-    color: #333;
-    border: none;
-    padding: 2px 8px;
-    font-size: 10px;
-    border-radius: 4px;
-    cursor: pointer;
-}
+#desc-drawer.expanded { transform: translateX(-50%) translateY(0); }
+.drawer-close-btn { float: right; background: #ddd; color: #333; border: none; padding: 2px 8px; font-size: 10px; border-radius: 4px; cursor: pointer; }
 
-#judge-box { display:none; position:fixed; top:45%; left:50%; transform:translate(-50%,-50%); background:white; padding:16px; border:2px solid #333; z-index:2000; text-align:center; border-radius:12px; width: 85%; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+/* 彈出詢問框通用樣式 */
+.pop-box { display:none; position:fixed; top:45%; left:50%; transform:translate(-50%,-50%); background:white; padding:16px; border:2px solid #333; z-index:4500; text-align:center; border-radius:12px; width: 85%; max-width: 380px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+.pop-box button { height: 36px; font-size: 12px; font-weight: bold; padding: 0 12px; border-radius: 6px; border: none; cursor: pointer; }
 
-/* 初始人數設定遮罩 */
+/* 專屬即時防禦詢問彈窗 */
+#defense-overlay {
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 4800;
+}
+#defense-box {
+    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    background: #fff; width: 85%; max-width: 360px; padding: 20px; border-radius: 12px;
+    border: 3px solid #f59e0b; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center; z-index: 4900;
+}
+.defense-btn-row { display: flex; flex-direction: column; gap: 8px; margin-top: 15px; }
+.def-btn { color: white; height: 40px; font-weight: bold; border-radius: 6px; border: none; font-size: 13px; }
+
 #setup-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(44,44,44,0.98); z-index:5000; display:flex; flex-direction:column; align-items:center; justify-content:center; color:white; padding:20px; text-align:center; }
 .setup-btn-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; width:100%; max-width:300px; margin-bottom:30px; }
 .setup-btn { background:#444; color:white; height:50px; font-size:16px; border-radius:6px; font-weight:bold; border: none; }
@@ -213,6 +215,16 @@ body {
         <button class="setup-btn" onclick="selectPlayerCount(4)">4 人</button>
         <button class="setup-btn" onclick="selectPlayerCount(5)">5 人</button>
         <button class="setup-btn" onclick="selectPlayerCount(6)">6 人</button>
+    </div>
+</div>
+
+<div id="defense-overlay">
+    <div id="defense-box">
+        <h3 style="color: #c62828; font-size: 16px; margin-bottom: 6px;">⚠️ 遭到技能卡襲擊！</h3>
+        <p id="defense-msg" style="font-size: 13px; color: #333; line-height: 1.4;"></p>
+        <p style="font-size: 11px; color: #666; margin-top: 4px;">偵測到你身上擁有防禦技能，要即時發動攔截嗎？</p>
+        <div class="defense-btn-row" id="defense-choices">
+            </div>
     </div>
 </div>
 
@@ -238,12 +250,12 @@ body {
         <div class="quadrant" id="quad-4"></div>
     </div>
 
-    <div id="judge-box">
+    <div id="judge-box" class="pop-box">
         <h3 id="judge-title" style="font-size:14px;">事件判定</h3>
         <p id="judge-desc" style="margin:8px 0; font-size:11px; color:#555;">請猜拳後輸入結果：</p>
         <div style="display:flex; gap:10px; justify-content:center;">
-            <button onclick="handleJudge(true)" style="background:#2e7d32; color:white; height: 36px; font-size:12px;">贏了(+2)</button>
-            <button onclick="handleJudge(false)" style="background:#c62828; color:white; height: 36px; font-size:12px;">輸了(+1)</button>
+            <button onclick="handleJudge(true)" style="background:#2e7d32; color:white;">贏了(+2)</button>
+            <button onclick="handleJudge(false)" style="background:#c62828; color:white;">輸了(+1)</button>
         </div>
     </div>
 
@@ -255,7 +267,6 @@ body {
 
     <div class="controls">
         <div class="hand-container" id="hand-cards"></div>
-        
         <div class="action-row">
             <button id="roll-btn" onclick="rollDice()">🎲 擲骰子</button>
             <button id="card-btn" onclick="playCard()" disabled>🧬 使用卡片</button>
@@ -286,6 +297,9 @@ const eventPool = [
 let currentTurnPlayer = 0; let selectedCardIndex = null; let globalMaxSteps = 3; let globalSonarEffect = 0; let pendingJudgePlayer = null;
 let remainingSteps = 0; let gameEnded = false;
 
+// 防禦攔截專用暫存暫態
+let currentAttackContext = null;
+
 const allPlayersTemplate = [
     { id: 1, name: "P1", team: 0, hp: 5, position: 101, trap: false, bag: [], hand: [] }, 
     { id: 2, name: "P2", team: 0, hp: 5, position: 101, trap: false, bag: [], hand: [] }, 
@@ -295,11 +309,10 @@ const allPlayersTemplate = [
     { id: 6, name: "P6", team: 2, hp: 5, position: 301, trap: false, bag: [], hand: [] }  
 ];
 
-let activePlayers = []; 
-const teams = [{ score: 0 }, { score: 0 }, { score: 0 }]; 
+let activePlayers = []; const teams = [{ score: 0 }, { score: 0 }, { score: 0 }]; 
 
 const mapConfig = [
-    // --- 🟥 左上 (red - quad: 1) ---
+    // --- 🟥 左上 (quad: 1) ---
     { id: 101, quad: 1, x: 4, y: 1, name: "R", type: "start-team0", next: [103] },
     { id: 102, quad: 1, x: 3, y: 2, name: " ", type: "ocean", next: [104] },
     { id: 103, quad: 1, x: 4, y: 2, name: " ", type: "ocean", next: [102, 105] },
@@ -316,8 +329,7 @@ const mapConfig = [
     { id: 114, quad: 1, x: 6, y: 6, name: " ", type: "ocean", next: [116, 112] },
     { id: 115, quad: 1, x: 4, y: 7, name: " ", type: "ocean", next: [113, 310] },
     { id: 116, quad: 1, x: 7, y: 7, name: "R", type: "station station-t0", next: [114] },
-
-    // --- ⚪ 右上 (white - quad: 2) ---
+    // --- ⚪ 右上 (quad: 2) ---
     { id: 201, quad: 2, x: 1, y: 4, name: " ", type: "ocean", next: [202, 110] },
     { id: 202, quad: 2, x: 2, y: 3, name: " ", type: "ocean", next: [203, 201] },
     { id: 203, quad: 2, x: 3, y: 3, name: " ", type: "ocean", next: [206, 202] },
@@ -331,8 +343,7 @@ const mapConfig = [
     { id: 211, quad: 2, x: 5, y: 5, name: " ", type: "ocean", next: [212, 208] },
     { id: 212, quad: 2, x: 6, y: 4, name: " ", type: "ocean", next: [213, 211] },
     { id: 213, quad: 2, x: 7, y: 4, name: " ", type: "ocean", next: [212] },
-
-    // --- 🟩 左下 (green - quad: 3) ---
+    // --- 🟩 左下 (quad: 3) ---
     { id: 301, quad: 3, x: 4, y: 7, name: "G", type: "start-team2", next: [302] },
     { id: 302, quad: 3, x: 4, y: 6, name: " ", type: "ocean", next: [303] },
     { id: 303, quad: 3, x: 4, y: 5, name: " ", type: "ocean", next: [304, 302] },
@@ -347,8 +358,7 @@ const mapConfig = [
     { id: 312, quad: 3, x: 2, y: 3, name: " ", type: "ocean", next: [313] },
     { id: 313, quad: 3, x: 1, y: 4, name: " ", type: "ocean", next: [312] },
     { id: 314, quad: 3, x: 7, y: 1, name: "G", type: "station station-t2", next: [308] },
-
-    // --- 🟦 右下 (blue - quad: 4) ---
+    // --- 🟦 右下 (quad: 4) ---
     { id: 401, quad: 4, x: 4, y: 7, name: "B", type: "start-team1", next: [402] },
     { id: 402, quad: 4, x: 4, y: 6, name: " ", type: "ocean", next: [403] },
     { id: 403, quad: 4, x: 4, y: 5, name: " ", type: "ocean", next: [404] },
@@ -370,47 +380,33 @@ function showMsg(m, cb) { if(m) setTimeout(() => { alert(m); if(cb) cb(); }, 100
 
 function selectPlayerCount(count) {
     let selectedPlayers = [];
-    if (count === 2) {
-        selectedPlayers = [allPlayersTemplate[0], allPlayersTemplate[2]]; // P1(紅) vs P3(藍)
-    } else if (count === 3) {
-        selectedPlayers = [allPlayersTemplate[0], allPlayersTemplate[2], allPlayersTemplate[4]]; // 🟥🟦🟩 三邊大混戰
-    } else if (count === 4) {
-        selectedPlayers = [allPlayersTemplate[0], allPlayersTemplate[1], allPlayersTemplate[2], allPlayersTemplate[3]]; // 2v2 陣營對抗
-    } else if (count === 5) {
-        selectedPlayers = [allPlayersTemplate[0], allPlayersTemplate[1], allPlayersTemplate[2], allPlayersTemplate[3], allPlayersTemplate[4]];
-    } else {
-        selectedPlayers = allPlayersTemplate;
-    }
+    if (count === 2) selectedPlayers = [allPlayersTemplate[0], allPlayersTemplate[2]];
+    else if (count === 3) selectedPlayers = [allPlayersTemplate[0], allPlayersTemplate[2], allPlayersTemplate[4]];
+    else if (count === 4) selectedPlayers = [allPlayersTemplate[0], allPlayersTemplate[1], allPlayersTemplate[2], allPlayersTemplate[3]];
+    else if (count === 5) selectedPlayers = [allPlayersTemplate[0], allPlayersTemplate[1], allPlayersTemplate[2], allPlayersTemplate[3], allPlayersTemplate[4]];
+    else selectedPlayers = allPlayersTemplate;
 
     activePlayers = JSON.parse(JSON.stringify(selectedPlayers));
     document.getElementById("setup-overlay").style.display = "none";
-    
     adjustScoreBoardUI();
     initGame();
 }
 
 function adjustScoreBoardUI() {
-    let hasTeam0 = activePlayers.some(p => p.team === 0);
-    let hasTeam1 = activePlayers.some(p => p.team === 1);
-    let hasTeam2 = activePlayers.some(p => p.team === 2);
-    
-    document.getElementById("score-box-t0").style.display = hasTeam0 ? "block" : "none";
-    document.getElementById("score-box-t1").style.display = hasTeam1 ? "block" : "none";
-    document.getElementById("score-box-t2").style.display = hasTeam2 ? "block" : "none";
+    document.getElementById("score-box-t0").style.display = activePlayers.some(p => p.team === 0) ? "block" : "none";
+    document.getElementById("score-box-t1").style.display = activePlayers.some(p => p.team === 1) ? "block" : "none";
+    document.getElementById("score-box-t2").style.display = activePlayers.some(p => p.team === 2) ? "block" : "none";
 }
 
 function initGame() {
     initMapData();
     activePlayers.forEach(p => {
         p.hand = [];
-        for(let i=0; i<4; i++) {
-            p.hand.push(cardPool[Math.floor(Math.random() * cardPool.length)]);
-        }
+        for(let i=0; i<4; i++) p.hand.push(cardPool[Math.floor(Math.random() * cardPool.length)]);
     });
     renderBoard();
 }
 
-// 🛠️ 垃圾比例調高關鍵：調大 rand 篩選範圍（原 0.45 提升至 0.65，約 53% 滿載垃圾率）
 function initMapData() {
     mapConfig.forEach(cell => {
         if (cell.type === "ocean") {
@@ -445,7 +441,6 @@ function updateUI() {
         }
     });
     for (let i = 0; i < 3; i++) document.getElementById(`t${i}-score`).innerText = teams[i].score;
-    
     document.getElementById("p-hp-info").innerHTML = activePlayers.map(p => `<div>${p.name}:${p.hp} HP${p.trap?'🕸️':''}(🎒${p.bag.length}/3)</div>`).join("");
     document.getElementById("current-turn").innerText = `${activePlayers[currentTurnPlayer].name} 的回合`;
     renderHand();
@@ -464,13 +459,8 @@ function executeStepByStep(player) {
         if (!pendingJudgePlayer && !gameEnded) endMovePhase();
         return;
     }
-
     let cellData = mapConfig.find(c => c.id === player.position);
-    if (!cellData || !cellData.next || cellData.next.length === 0) {
-        remainingSteps = 0;
-        endMovePhase();
-        return;
-    }
+    if (!cellData || !cellData.next || cellData.next.length === 0) { remainingSteps = 0; endMovePhase(); return; }
 
     if (cellData.next.length === 1) {
         player.position = cellData.next[0];
@@ -484,11 +474,7 @@ function executeStepByStep(player) {
             if (targetCell) {
                 targetCell.classList.add("selectable-path");
                 targetCell.onclick = () => {
-                    clearSelectionUI();
-                    player.position = nextId;
-                    remainingSteps--;
-                    updateUI();
-                    executeStepByStep(player);
+                    clearSelectionUI(); player.position = nextId; remainingSteps--; updateUI(); executeStepByStep(player);
                 };
             }
         });
@@ -497,10 +483,7 @@ function executeStepByStep(player) {
 
 function clearSelectionUI() {
     document.getElementById("choice-overlay").style.display = "none";
-    document.querySelectorAll('.cell').forEach(el => {
-        el.classList.remove("selectable-path");
-        el.onclick = null;
-    });
+    document.querySelectorAll('.cell').forEach(el => { el.classList.remove("selectable-path"); el.onclick = null; });
 }
 
 function rollDice() {
@@ -513,9 +496,7 @@ function rollDice() {
 }
 
 function endMovePhase() {
-    updateUI(); 
-    document.getElementById("roll-btn").disabled = true; 
-    document.getElementById("skip-card-btn").disabled = false;
+    updateUI(); document.getElementById("roll-btn").disabled = true; document.getElementById("skip-card-btn").disabled = false;
     if (globalSonarEffect > 0) globalSonarEffect--;
     globalMaxSteps = 3;
 }
@@ -525,45 +506,24 @@ function checkGrid(player) {
     if (!c) return;
 
     if((c.type === "ocean" || c.type === "event-cell") && c.garbage) {
-        if(player.bag.length >= 3) { 
-            showMsg(`${player.name} 背包滿了！`); 
-        } else { 
-            player.bag.push(c.garbage); 
-            showMsg(`${player.name} 撿到 ${c.garbage.name}`); 
-            c.garbage = null; 
-            document.querySelector(`#cell-${player.position} .cell-info`).innerText = ""; 
-        }
+        if(player.bag.length >= 3) { showMsg(`${player.name} 背包滿了！`); } 
+        else { player.bag.push(c.garbage); showMsg(`${player.name} 撿到 ${c.garbage.name}`); c.garbage = null; document.querySelector(`#cell-${player.position} .cell-info`).innerText = ""; }
     }
-
     if(c.type.includes("station") && player.bag.length > 0) {
-        let isCorrectStation = false;
-        if (player.team === 0 && c.type.includes("station-t0")) isCorrectStation = true; 
-        if (player.team === 1 && c.type.includes("station-t1")) isCorrectStation = true; 
-        if (player.team === 2 && c.type.includes("station-t2")) isCorrectStation = true; 
-
+        let isCorrectStation = (player.team === 0 && c.type.includes("station-t0")) || (player.team === 1 && c.type.includes("station-t1")) || (player.team === 2 && c.type.includes("station-t2"));
         if (isCorrectStation) {
-            let sc = player.bag.reduce((s, g) => s + g.score, 0); 
-            teams[player.team].score += sc; 
-            player.bag = [];
+            let sc = player.bag.reduce((s, g) => s + g.score, 0); teams[player.team].score += sc; player.bag = [];
             showMsg(`🎉 成功抵達本隊專屬回收站！回收成功，獲得 ${sc} 分！`);
-        } else {
-            showMsg(`⚠️ 這是其他隊伍的回收站！${player.name} 無法在此回收垃圾。`);
-        }
+        } else { showMsg(`⚠️ 這是其他隊伍的回收站！${player.name} 無法在此回收垃圾。`); }
     }
-
     if(c.type === "event-cell" || c.name === "!") {
         const e = eventPool[Math.floor(Math.random()*eventPool.length)];
-        if(e.id === "evt_whale") { 
-            pendingJudgePlayer = player; 
-            document.getElementById("judge-box").style.display = "block"; 
-        } else {
+        if(e.id === "evt_whale") { pendingJudgePlayer = player; document.getElementById("judge-box").style.display = "block"; } 
+        else {
             showMsg(`!事件：${e.name}\n${e.desc}`);
             if(e.id === "evt_straw") { teams[player.team].score += 1; }
             else if(e.id === "evt_oil") { activePlayers.forEach(pl => pl.hp = Math.max(0, pl.hp - 1)); globalMaxSteps = 2; }
-            else if(e.id === "evt_net") { 
-                let target = activePlayers[Math.floor(Math.random()*activePlayers.length)]; 
-                if(target.id!==player.id) target.trap = true; 
-            }
+            else if(e.id === "evt_net") { let target = activePlayers[Math.floor(Math.random()*activePlayers.length)]; if(target.id!==player.id) target.trap = true; }
             else if(e.id === "evt_sonar") { globalSonarEffect = 2; }
             else if(e.id === "evt_earthquake") { player.position = mapConfig[Math.floor(Math.random()*mapConfig.length)].id; }
             else if(e.id === "evt_turtles") { teams[player.team].score = Math.max(0, teams[player.team].score - 3); }
@@ -571,33 +531,99 @@ function checkGrid(player) {
     }
 }
 
-// 🎒 內收式核心邏輯：外露卡片名稱、點擊展開詳細說明資訊
 function renderHand() {
     const box = document.getElementById("hand-cards"); box.innerHTML = "";
     const p = activePlayers[currentTurnPlayer];
-    
     p.hand.forEach((c, i) => {
-        const d = document.createElement("div"); 
-        d.className = `card-option ${selectedCardIndex === i ? 'selected' : ''}`;
-        
+        const d = document.createElement("div"); d.className = `card-option ${selectedCardIndex === i ? 'selected' : ''}`;
         d.onclick = () => { 
-            selectedCardIndex = i; 
-            renderHand(); 
-            document.getElementById("card-btn").disabled = false; 
-            
-            // 升起並填入詳細卡片說明
-            document.getElementById("drawer-card-name").innerText = c.name;
-            document.getElementById("drawer-card-desc").innerText = c.desc;
+            selectedCardIndex = i; renderHand(); document.getElementById("card-btn").disabled = false; 
+            document.getElementById("drawer-card-name").innerText = c.name; document.getElementById("drawer-card-desc").innerText = c.desc;
             document.getElementById("desc-drawer").classList.add("expanded");
         };
-        
-        d.innerHTML = `<span>${c.name.split(" ")[0]}</span>`; // 只渲染外露卡片大名或Emoji
-        box.appendChild(d);
+        d.innerHTML = `<span>${c.name.split(" ")[0]}</span>`; box.appendChild(d);
     });
 }
 
-function closeDrawer() {
-    document.getElementById("desc-drawer").classList.remove("expanded");
+function closeDrawer() { document.getElementById("desc-drawer").classList.remove("expanded"); }
+
+// 🛠️ 核心修改：攔截攻擊並偵測目標是否有防禦卡（槓龜或章魚）
+function checkAndTriggerDefense(attacker, target, cardType, onNoDefense) {
+    // 尋找目標手牌中是否有防禦卡
+    const hasTurtle = target.hand.findIndex(c => c.id === "turtle");
+    const hasOctopus = target.hand.findIndex(c => c.id === "octopus");
+
+    if (hasTurtle !== -1 || hasOctopus !== -1) {
+        // 暫存目前的攻擊上下文環境
+        currentAttackContext = { attacker, target, cardType, hasTurtle, hasOctopus, onNoDefense };
+        
+        // 更新防禦詢問彈窗資訊
+        document.getElementById("defense-msg").innerHTML = `<b>${attacker.name}</b> 對你使用了 <b>${cardType === 'shrimp' ? '🦐 爆炸蝦' : '🦈 冰凍鯊'}</b>！`;
+        const choiceContainer = document.getElementById("defense-choices");
+        choiceContainer.innerHTML = "";
+
+        // 如果手上有槓龜
+        if (hasTurtle !== -1) {
+            const btn = document.createElement("button"); btn.className = "def-btn"; btn.style.background = "#065f46";
+            btn.innerText = "🐢 使用【槓龜】(阻擋並直達回收站)";
+            btn.onclick = () => executeDefense("turtle"); choiceContainer.appendChild(btn);
+        }
+        // 如果手上有章魚
+        if (hasOctopus !== -1) {
+            const btn = document.createElement("button"); btn.className = "def-btn"; btn.style.background = "#3730a3";
+            btn.innerText = "🐙 使用【章魚墨客】(阻擋並使其暫停)";
+            btn.onclick = () => executeDefense("octopus"); choiceContainer.appendChild(btn);
+        }
+        // 放棄防禦按鈕
+        const skipBtn = document.createElement("button"); skipBtn.className = "def-btn"; skipBtn.style.background = "#4b5563";
+        skipBtn.innerText = "❌ 不使用，硬吃技能效果";
+        skipBtn.onclick = () => executeDefense("skip"); choiceContainer.appendChild(skipBtn);
+
+        // 彈出防禦 UI
+        document.getElementById("defense-overlay").style.display = "block";
+    } else {
+        // 沒有防禦牌，直接執行原本的受擊流程
+        onNoDefense();
+    }
+}
+
+// 結算防禦選擇
+function executeDefense(choice) {
+    document.getElementById("defense-overlay").style.display = "none";
+    const ctx = currentAttackContext;
+    if (!ctx) return;
+
+    if (choice === "turtle") {
+        // 消耗被攻擊者的槓龜牌
+        ctx.target.hand.splice(ctx.hasTurtle, 1);
+        ctx.target.hand.push(cardPool[Math.floor(Math.random() * cardPool.length)]);
+        // 觸發槓龜效果：阻擋攻擊，直接送去回收站
+        ctx.target.trap = false;
+        const targetStation = mapConfig.find(cell => cell.type.includes(`station-t${ctx.target.team}`));
+        if (targetStation) ctx.target.position = targetStation.id;
+        showMsg(`🛡️ ${ctx.target.name} 成功使用【🐢 槓龜】攔截攻擊！安全逃逸至回收站。`);
+        checkGrid(ctx.target); // 抵達回收站自動檢查是否能結算
+    } 
+    else if (choice === "octopus") {
+        // 消耗被攻擊者的章魚牌
+        ctx.target.hand.splice(ctx.hasOctopus, 1);
+        ctx.target.hand.push(cardPool[Math.floor(Math.random() * cardPool.length)]);
+        // 觸發章魚效果：阻擋攻擊，攻擊方噴墨暫停一回合
+        ctx.attacker.trap = true;
+        showMsg(`🛡️ ${ctx.target.name} 成功發動【🐙 章魚墨客】！反手朝 ${ctx.attacker.name} 噴墨，將其困在原地。`);
+    } 
+    else {
+        // 玩家放棄防禦，直接結算原卡片傷害/偷取效果
+        showMsg(`${ctx.target.name} 放棄使用防禦卡。`);
+        ctx.onNoDefense();
+        return; // 在對應的攻擊完成後自己會處理卡片扣除與換手
+    }
+
+    // 如果成功發動防禦，幫發動攻擊者正常扣除並補充當前使用卡
+    ctx.attacker.hand.splice(selectedCardIndex, 1);
+    ctx.attacker.hand.push(cardPool[Math.floor(Math.random() * cardPool.length)]);
+    currentAttackContext = null;
+    renderHand(); updateUI(); endTurn();
 }
 
 function playCard() {
@@ -609,10 +635,13 @@ function playCard() {
             const targetId = prompt(`請輸入要攻擊的玩家ID`);
             const target = activePlayers.find(pl => pl.id === parseInt(targetId));
             if (target && target.id !== p.id) {
-                target.hp = Math.max(0, target.hp - 2);
-                p.hand.splice(selectedCardIndex, 1);
-                p.hand.push(cardPool[Math.floor(Math.random()*cardPool.length)]);
-                renderHand(); updateUI(); endTurn();
+                // 🚀 攔截：送入即時防禦偵測
+                checkAndTriggerDefense(p, target, 'shrimp', () => {
+                    // 沒防禦時的原效果流程
+                    target.hp = Math.max(0, target.hp - 2);
+                    p.hand.splice(selectedCardIndex, 1); p.hand.push(cardPool[Math.floor(Math.random()*cardPool.length)]);
+                    renderHand(); updateUI(); showMsg(`🦐 爆炸蝦成功重創了 ${target.name} (-2HP)！`); endTurn();
+                });
             } else { showMsg("無效的玩家ID或不能選擇自己！"); }
         });
     }
@@ -622,18 +651,20 @@ function playCard() {
             const targetId = prompt(`請輸入要偷取的玩家ID`);
             const target = activePlayers.find(pl => pl.id === parseInt(targetId));
             if (target && target.id !== p.id) {
-                if (target.bag.length > 0 && p.bag.length < 3) {
-                    const stolen = target.bag.pop();
-                    p.bag.push(stolen);
-                    p.hand.splice(selectedCardIndex, 1);
-                    p.hand.push(cardPool[Math.floor(Math.random()*cardPool.length)]);
-                    renderHand(); updateUI(); showMsg(`成功偷取 ${target.name} 的 ${stolen.name}！`); endTurn();
-                } else { showMsg("無法偷取！對方背包空了或你自己滿了。"); }
+                // 🚀 攔截：送入即時防禦偵測
+                checkAndTriggerDefense(p, target, 'shark', () => {
+                    // 沒防禦時的原效果流程
+                    if (target.bag.length > 0 && p.bag.length < 3) {
+                        const stolen = target.bag.pop(); p.bag.push(stolen);
+                        p.hand.splice(selectedCardIndex, 1); p.hand.push(cardPool[Math.floor(Math.random()*cardPool.length)]);
+                        renderHand(); updateUI(); showMsg(`🦈 冰凍鯊強行奪取了 ${target.name} 的 ${stolen.name}！`); endTurn();
+                    } else { showMsg("無法偷取！對方背包空了或你自己滿了。"); }
+                });
             } else { showMsg("無效的玩家ID！"); }
         });
     }
     else if(c.id === "starfish") {
-        showMsg("使用了 ⭐ 生命之星！如果你剛被攻擊，可以恢復1HP，否則前進1步。", () => {
+        showMsg("使用了 ⭐ 生命之星！恢復 1 HP，若滿血則前進 1 步。", () => {
             if (p.hp < 5) { p.hp = Math.min(5, p.hp + 1); showMsg("你恢復了1HP！"); } 
             else { processPlayerMovement(p, 1); }
             p.hand.splice(selectedCardIndex, 1); p.hand.push(cardPool[Math.floor(Math.random()*cardPool.length)]);
@@ -647,30 +678,11 @@ function playCard() {
             renderHand(); updateUI(); endTurn();
         });
     }
-    else if(c.id === "turtle") {
-        showMsg("使用了 🐢 槓龜！移動到你所屬隊伍的專屬回收站進行回收！", () => {
-            p.trap = false;
-            const targetStation = mapConfig.find(cell => cell.type.includes(`station-t${p.team}`));
-            if(targetStation) p.position = targetStation.id;
-            p.hand.splice(selectedCardIndex, 1); p.hand.push(cardPool[Math.floor(Math.random()*cardPool.length)]);
-            renderHand(); updateUI(); checkGrid(p); endTurn();
-        });
-    }
-    else if(c.id === "octopus") {
-        const availableIds = activePlayers.filter(pl => pl.team !== p.team).map(pl => pl.id).join(", ");
-        if(!availableIds) { showMsg("目前沒有敵方玩家可以選！卡片保留。"); return; }
-        showMsg(`使用了 🐙 章魚墨客！\n可選敵方玩家 ID：(${availableIds})`, () => {
-            const attackerId = prompt("請輸入要使其暫停一回合的玩家ID");
-            const attacker = activePlayers.find(pl => pl.id === parseInt(attackerId) && pl.team !== p.team);
-            if (attacker) {
-                attacker.trap = true;
-                p.hand.splice(selectedCardIndex, 1); p.hand.push(cardPool[Math.floor(Math.random()*cardPool.length)]);
-                renderHand(); updateUI(); showMsg(`已用章魚墨困住 ${attacker.name}！`); endTurn();
-            } else { showMsg("無效的敵方玩家ID！"); }
-        });
+    else if(c.id === "turtle" || c.id === "octopus") {
+        showMsg(`⚠️ 【${c.name}】是專門被動防禦牌！必須在別人的回合遭受攻擊時，點擊彈出的即時視窗發動，不能在自己的回合主動打出喔！`);
     }
     else if(c.id === "shell") {
-        showMsg("使用了 🐚 貝感欣慰！撿起地圖上前後兩格的吸管（若有），每一垃圾可變為兩積分！", () => {
+        showMsg("使用了 🐚 貝感欣慰！將前後鄰近兩格格內的所有吸管進化回收！", () => {
             const currentIndex = mapConfig.findIndex(cell => cell.id === p.position);
             const forwardCell = mapConfig[currentIndex + 1]; const backwardCell = mapConfig[currentIndex - 1];
             let pointsGained = 0;
@@ -678,19 +690,19 @@ function playCard() {
                 if (cell && cell.garbage && cell.garbage.key === "straw") { pointsGained += 2; cell.garbage = null; const el = document.querySelector(`#cell-${cell.id} .cell-info`); if(el) el.innerText = ""; }
             });
             if (pointsGained > 0) { teams[p.team].score += pointsGained; showMsg(`成功淨化吸管，獲得 ${pointsGained} 分！`); } 
-            else { showMsg("前後相鄰格子內沒有吸管垃圾可淨化！"); }
+            else { showMsg("前後相鄰格子內沒有吸管垃圾！"); }
             p.hand.splice(selectedCardIndex, 1); p.hand.push(cardPool[Math.floor(Math.random()*cardPool.length)]);
             renderHand(); updateUI(); endTurn();
         });
     }
     else if(c.id === "pleco") {
-        showMsg("使用了 🐟 垃圾清道夫！若是當前格子遇到3分以下的垃圾，可將垃圾變為1HP，垃圾作廢！", () => {
+        showMsg("使用了 🐟 垃圾清道夫！消耗當前格子一個3分以下的垃圾來幫自己恢復1HP。", () => {
             const currentCell = mapConfig.find(cell => cell.id === p.position);
             if (currentCell && currentCell.garbage && currentCell.garbage.score <= 3) {
                 p.hp = Math.min(5, p.hp + 1); currentCell.garbage = null;
                 const el = document.querySelector(`#cell-${currentCell.id} .cell-info`); if(el) el.innerText = "";
-                showMsg("成功清道！垃圾作廢，你恢復了1HP！");
-            } else { showMsg("這格沒有3分以下的垃圾可清道！"); }
+                showMsg("清道夫成功吞噬垃圾！你恢復了1HP！");
+            } else { showMsg("這格沒有3分以下的垃圾可供吞噬！"); }
             p.hand.splice(selectedCardIndex, 1); p.hand.push(cardPool[Math.floor(Math.random()*cardPool.length)]);
             renderHand(); updateUI(); endTurn();
         });
@@ -709,8 +721,7 @@ function endTurn() {
     currentTurnPlayer = (currentTurnPlayer + 1) % activePlayers.length; selectedCardIndex = null;
     document.getElementById("roll-btn").disabled = false; document.getElementById("card-btn").disabled = true;
     document.getElementById("skip-card-btn").disabled = true; document.getElementById("dice-result").innerText = "";
-    closeDrawer(); // 👈 切換回合時，自動把前一個人的說明抽屜向下收合隱藏
-    updateUI();
+    closeDrawer(); updateUI();
 }
 
 function checkAllGarbageCleared() {
@@ -718,18 +729,11 @@ function checkAllGarbageCleared() {
     const remainingGarbage = mapConfig.filter(cell => cell.garbage).length;
     if (remainingGarbage === 0 && activePlayers.length > 0) {
         gameEnded = true;
-        document.getElementById("roll-btn").disabled = true;
-        document.getElementById("card-btn").disabled = true;
-        document.getElementById("skip-card-btn").disabled = true;
-        
+        document.getElementById("roll-btn").disabled = true; document.getElementById("card-btn").disabled = true; document.getElementById("skip-card-btn").disabled = true;
         let winnerTeam = 0; let maxScore = -1;
-        for(let i=0; i<3; i++) {
-            if(teams[i].score > maxScore) { maxScore = teams[i].score; winnerTeam = i; }
-        }
+        for(let i=0; i<3; i++) { if(teams[i].score > maxScore) { maxScore = teams[i].score; winnerTeam = i; } }
         const teamNames = ["紅隊", "藍隊", "綠隊"];
-        setTimeout(() => {
-            alert(`🎉 遊戲結束！海底垃圾已全數清理乾淨！\n🏆 恭喜最高分隊伍：【${teamNames[winnerTeam]}】獲得勝利！`);
-        }, 500);
+        setTimeout(() => { alert(`🎉 遊戲結束！海底垃圾已全數清理乾淨！\n🏆 恭喜最高分隊伍：【${teamNames[winnerTeam]}】獲得勝利！`); }, 500);
     }
 }
 </script>
