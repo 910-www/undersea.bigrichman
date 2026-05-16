@@ -18,16 +18,16 @@ body {
     height: 100vh; height: -webkit-fill-available; overflow: hidden;
 }
 
-#game-container { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 6px; height: 100%; justify-content: space-between; }
+#game-container { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 6px; height: 100%; justify-content: flex-start; }
 
 /* 頂部精簡資訊欄 */
 .top-status-bar {
     width: 100%; background: rgba(255, 255, 255, 0.96); 
     display: flex; flex-direction: column; padding: 6px 8px; 
-    border-radius: 8px; box-shadow: 0 3px 10px rgba(0,0,0,0.3); gap: 4px;
+    border-radius: 8px; box-shadow: 0 3px 10px rgba(255, 255, 255, 0.3); gap: 4px;
 }
 .status-row-top { display: flex; justify-content: space-between; align-items: center; }
-.center-turn { font-size: 13px; font-weight: 900; background: #222; color: #fff; padding: 2px 8px; border-radius: 4px; }
+.center-turn { font-size: 13px; font-weight: 900; background: #929292; color: #fff; padding: 2px 8px; border-radius: 4px; }
 #dice-result { font-weight: bold; color: var(--accent-red); font-size: 13px; }
 
 #choice-overlay { display: none; text-align: center; padding: 4px; background: #fff3cd; color: #856404; font-size: 11px; font-weight: bold; border-radius: 4px; animation: flash 0.8s infinite alternate; }
@@ -35,7 +35,7 @@ body {
 
 .center-scores { display: flex; justify-content: space-around; width: 100%; background: #e9e9e9; padding: 3px; border-radius: 5px; }
 .score-item { text-align: center; flex: 1; font-weight: bold; font-size: 12px; }
-.center-hp { font-size: 9px; color: #333; background: #fafaf8; padding: 4px; border-radius: 4px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2px; text-align: center; font-weight: bold; }
+.center-hp { font-size: 12px; color: #333; background: #fafaf8; padding: 4px; border-radius: 4px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2px; text-align: center; font-weight: bold; }
 
 /* 棋盤滿版適應 */
 .board-wrapper {
@@ -45,25 +45,26 @@ body {
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr 1fr;
     gap: 4px;
-    background: #1a1a1a;
+    background: #a2a2a2;
     padding: 5px;
     border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    margin-bottom: 90px; /* 留空間給底部的固定控制區 */
 }
 
 .quadrant {
     background: #ffffff;
-    border: 1px solid #333;
+    border: 1px solid #909090;
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     grid-template-rows: repeat(7, 1fr);
     position: relative;
 }
 
-/* 縮小圈圈格子防手機擠壓疊格 */
+/* 圓圈格子 */
 .cell { 
     background: #ffffff; 
-    border: 1px solid #444;
+    border: 1px solid #c4c4c4;
     border-radius: 50%; 
     display: flex; 
     justify-content: center; 
@@ -91,36 +92,130 @@ body {
 .cell.station-t2 { background: #f0fdf4; color: var(--accent-green); }
 .cell.event-cell { background: #f5f3ff; border: 1px dashed #8b5cf6; }
 
-.cell-name { font-size: 8px; font-weight: bold; position: absolute; top: -4px; color: #ccc; transform: scale(0.6); }
+.cell-name { font-size: 12px; font-weight: bold; position: absolute; top: 0px; color: #353b39; transform: scale(0.6); }
 .cell-info { font-size: 11px; line-height: 1; }
 
-/* 棋子渲染優化：微調邊距避免擋到中央垃圾圖示 */
+/* 棋子渲染 */
 .player-container { display: flex; gap: 0.5px; position: absolute; bottom: 1px; right: 1px; flex-wrap: wrap; justify-content: flex-end; z-index: 10; max-width: 80%; }
 .player-token { width: 9px; height: 9px; border-radius: 50%; color: #fff; font-size: 5px; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 0.3px solid #fff; }
 .t0-token { background: var(--accent-red); }
 .t1-token { background: var(--accent-blue); }
 .t2-token { background: var(--accent-green); }
 
-/* 下方手機專用大按鈕控制區 */
-.controls { width: 100%; display: flex; flex-direction: column; gap: 4px; background: rgba(255,255,255,0.1); padding: 4px; border-radius: 8px; }
-.action-row { display: flex; gap: 6px; }
-button { flex: 1; height: 44px; font-size: 13px; font-weight: bold; cursor: pointer; background: #ffffff; color: #222; border: none; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-button:active { background: #ddd; }
-button:disabled { background: #555; color: #888; box-shadow: none; }
+/* --- 下方固定控制區（按鈕與技能名稱永遠在外面） --- */
+.controls { 
+    width: 100%; 
+    max-width: 480px;
+    background: rgba(34, 34, 34, 0.95); 
+    padding: 6px; 
+    border-radius: 12px 12px 0 0; 
+    box-shadow: 0 -3px 15px rgba(0,0,0,0.4);
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 4000;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* 頂部動作按鈕 */
+.action-row { display: flex; gap: 4px; }
+.action-row button { flex: 1; height: 38px; font-size: 12px; font-weight: bold; cursor: pointer; background: #ffffff; color: #222; border: none; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+.action-row button:active { background: #ddd; }
+.action-row button:disabled { background: #555; color: #888; box-shadow: none; }
 #roll-btn { background: #f59e0b; color: white; }
 
-/* 卡片滾動滑動手感提升 */
-.hand-container { display: flex; gap: 6px; overflow-x: auto; padding: 2px 0; -webkit-overflow-scrolling: touch; }
-.hand-container::-webkit-scrollbar { display: none; } /* 隱藏難看的滾動條 */
-.card-option { min-width: 85px; max-width: 85px; border: 1px solid #444; border-radius: 6px; padding: 4px; background: #333; color: #fff; text-align: center; }
-.card-option.selected { border: 2px solid #f59e0b; background: #444; }
-.card-option b { font-size: 10px; display: block; margin-bottom: 2px; }
-.card-option span { font-size: 8px; color: #ccc; display: block; line-height: 1.1; transform: scale(0.9); }
+/* 橫向滾動的技能名稱按鈕（外露式） */
+.hand-container { 
+    display: flex; 
+    gap: 6px; 
+    overflow-x: auto; 
+    padding: 2px 0; 
+    -webkit-overflow-scrolling: touch; 
+}
+.hand-container::-webkit-scrollbar { display: none; }
+
+/* 單個外露技能按鈕樣式 */
+.card-option { 
+    min-width: 85px; 
+    max-width: 85px; 
+    height: 32px; 
+    border: 1px solid #555; 
+    border-radius: 6px; 
+    background: #2a2a2a; 
+    color: #fff; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 11px;
+    font-weight: bold;
+    white-space: nowrap;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+.card-option.selected { 
+    border: 10px solid #f59e0b; 
+    background: #f59e0b; 
+    color: #000; 
+}
+
+/* --- 內收式詳細說明抽屜（平常隱藏，點擊技能名稱才彈出） --- */
+#desc-drawer {
+    position: fixed;
+    bottom: 88px; 
+    left: 50%;
+    transform: translateX(-50%) translateY(180%); 
+    width: 100%;
+    max-width: 500px;
+    background: #ffffff;
+    color: #222;
+    padding: 10px 14px;
+    border-radius: 10px;
+    box-shadow: 0 -4px 25px rgba(0,0,0,0.35);
+    transition: transform 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+    z-index: 3990;
+    font-size: 15px;
+    border: 2px solid #f59e0b;
+}
+#desc-drawer.expanded {
+    transform: translateX(-50%) translateY(0); 
+}
+.drawer-close-btn {
+    float: right;
+    background: #ddd;
+    color: #333;
+    border: none;
+    padding: 2px 8px;
+    font-size: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+}
 
 #judge-box { display:none; position:fixed; top:45%; left:50%; transform:translate(-50%,-50%); background:white; padding:16px; border:2px solid #333; z-index:2000; text-align:center; border-radius:12px; width: 85%; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+
+/* 初始人數設定遮罩 */
+#setup-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(44,44,44,0.98); z-index:5000; display:flex; flex-direction:column; align-items:center; justify-content:center; color:white; padding:20px; text-align:center; }
+.setup-btn-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; width:100%; max-width:300px; margin-bottom:30px; }
+.setup-btn { background:#444; color:white; height:50px; font-size:16px; border-radius:6px; font-weight:bold; border: none; }
+.setup-btn:active { background:#666; }
 </style>
 </head>
 <body>
+
+<div id="setup-overlay">
+    <h1 style="font-size:24px; margin-bottom:10px; color:#f59e0b; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">🌊 Undersea Big Rich Man</h1>
+    <p style="font-size:14px; color:#ccc; margin-bottom:25px;">請選擇本次參與潛水清理任務的玩家人數：</p>
+    <div class="setup-btn-grid">
+        <button class="setup-btn" onclick="selectPlayerCount(2)">2 人</button>
+        <button class="setup-btn" onclick="selectPlayerCount(3)">3 人</button>
+        <button class="setup-btn" onclick="selectPlayerCount(4)">4 人</button>
+        <button class="setup-btn" onclick="selectPlayerCount(5)">5 人</button>
+        <button class="setup-btn" onclick="selectPlayerCount(6)">6 人</button>
+    </div>
+</div>
+
 <div id="game-container">
     <div class="top-status-bar">
         <div class="status-row-top">
@@ -129,9 +224,9 @@ button:disabled { background: #555; color: #888; box-shadow: none; }
         </div>
         <div id="choice-overlay">🗺️ 請直接點擊棋盤上閃爍黃光的圓圈！</div>
         <div class="center-scores">
-            <div class="score-item" style="color:var(--accent-red)">紅隊：<span id="t0-score">0</span></div>
-            <div class="score-item" style="color:var(--accent-blue)">藍隊：<span id="t1-score">0</span></div>
-            <div class="score-item" style="color:var(--accent-green)">綠隊：<span id="t2-score">0</span></div>
+            <div class="score-item" style="color:var(--accent-red)" id="score-box-t0">紅隊：<span id="t0-score">0</span></div>
+            <div class="score-item" style="color:var(--accent-blue)" id="score-box-t1">藍隊：<span id="t1-score">0</span></div>
+            <div class="score-item" style="color:var(--accent-green)" id="score-box-t2">綠隊：<span id="t2-score">0</span></div>
         </div>
         <div id="p-hp-info" class="center-hp">加載中...</div>
     </div>
@@ -152,8 +247,15 @@ button:disabled { background: #555; color: #888; box-shadow: none; }
         </div>
     </div>
 
+    <div id="desc-drawer">
+        <button class="drawer-close-btn" onclick="closeDrawer()">關閉 ✕</button>
+        <b id="drawer-card-name" style="color: #d97706; font-size: 13px;">卡片名稱</b>
+        <p id="drawer-card-desc" style="margin-top: 4px; line-height: 1.3; color: #444;">卡片效果說明...</p>
+    </div>
+
     <div class="controls">
         <div class="hand-container" id="hand-cards"></div>
+        
         <div class="action-row">
             <button id="roll-btn" onclick="rollDice()">🎲 擲骰子</button>
             <button id="card-btn" onclick="playCard()" disabled>🧬 使用卡片</button>
@@ -169,10 +271,10 @@ const garbageTypes = [
     { key: "straw", name: "吸管", score: 1, icon: "🥤" }
 ];
 const cardPool = [
-    { id: "shrimp", name: "🦐 爆炸蝦", desc: "自由前進 2 格，並撿起" }, { id: "shark", name: "🦈 冰凍鯊", desc: "自由前進 4 格，並撿起" },
-    { id: "starfish", name: "⭐ 生命星", desc: "回復自身 1 HP" }, { id: "whale", name: "🐋 鯨補給", desc: "全隊伍 HP 補滿" },
-    { id: "turtle", name: "🐢 龜甲萬", desc: "保護隊伍一輪" }, { id: "octopus", name: "🐙 章魚墨", desc: "隨機對手停一輪" },
-    { id: "shell", name: "🐚 貝感心", desc: "傳送至最近垃圾格,並撿起" }
+    { id: "shrimp", name: "🦐 爆炸蝦", desc: "前進 2 格撿起垃圾，並扣指定玩家2HP" }, { id: "shark", name: "🦈 冰凍鯊", desc: "強迫指定玩家將目前手上的垃圾無條件送給自己(若背包已達上限將無效)" },
+    { id: "starfish", name: "⭐ 生命之星", desc: "被攻擊可以出這張牌恢復 1 HP，若無遇前述情況則可往前一步" }, { id: "whale", name: "🐋 鯨心膽跳", desc: "個人/隊友 HP 補滿" },
+    { id: "turtle", name: "🐢 槓龜", desc: "當受到攻擊可抵擋攻擊，並且直接移動到回收站進行回收(受到攻擊時即時彈出視窗)" }, { id: "octopus", name: "🐙 章魚墨客", desc: "當受到攻擊可抵擋攻擊，並且使攻擊方暫停一回合(受到攻擊時即時彈出視窗)" },
+    { id: "shell", name: "🐚 貝感欣慰", desc: "能撿起前後兩格的垃圾(限吸管)每一垃圾可變成兩積分，淨化過的垃圾即作廢" }, { id: "pleco", name: "🐟 垃圾清道夫", desc: "若是遇到3分以下的垃圾，可將垃圾變為1HP，垃圾作廢" }
 ];
 const eventPool = [
     { id: "evt_whale", name: "擱淺鯨魚", desc: "猜拳決定積分" }, { id: "evt_straw", name: "海龜吸管", desc: "自己得分對手走" },
@@ -184,15 +286,20 @@ const eventPool = [
 let currentTurnPlayer = 0; let selectedCardIndex = null; let globalMaxSteps = 3; let globalSonarEffect = 0; let pendingJudgePlayer = null;
 let remainingSteps = 0; let gameEnded = false;
 
-const players = [
-    { id: 1, name: "P1", team: 0, hp: 5, position: 101, trap: false, bag: [] }, { id: 2, name: "P2", team: 0, hp: 5, position: 101, trap: false, bag: [] },
-    { id: 3, name: "P3", team: 1, hp: 5, position: 401, trap: false, bag: [] }, { id: 4, name: "P4", team: 1, hp: 5, position: 401, trap: false, bag: [] },
-    { id: 5, name: "P5", team: 2, hp: 5, position: 301, trap: false, bag: [] }, { id: 6, name: "P6", team: 2, hp: 5, position: 301, trap: false, bag: [] }
+const allPlayersTemplate = [
+    { id: 1, name: "P1", team: 0, hp: 5, position: 101, trap: false, bag: [], hand: [] }, 
+    { id: 2, name: "P2", team: 0, hp: 5, position: 101, trap: false, bag: [], hand: [] }, 
+    { id: 3, name: "P3", team: 1, hp: 5, position: 401, trap: false, bag: [], hand: [] }, 
+    { id: 4, name: "P4", team: 1, hp: 5, position: 401, trap: false, bag: [], hand: [] }, 
+    { id: 5, name: "P5", team: 2, hp: 5, position: 301, trap: false, bag: [], hand: [] }, 
+    { id: 6, name: "P6", team: 2, hp: 5, position: 301, trap: false, bag: [], hand: [] }  
 ];
-const teams = [{ score: 0, hand: [] }, { score: 0, hand: [] }, { score: 0, hand: [] }];
+
+let activePlayers = []; 
+const teams = [{ score: 0 }, { score: 0 }, { score: 0 }]; 
 
 const mapConfig = [
-    // --- 🟥 左上卡片 (red - quad: 1) ---
+    // --- 🟥 左上 (red - quad: 1) ---
     { id: 101, quad: 1, x: 4, y: 1, name: "R", type: "start-team0", next: [103] },
     { id: 102, quad: 1, x: 3, y: 2, name: " ", type: "ocean", next: [104] },
     { id: 103, quad: 1, x: 4, y: 2, name: " ", type: "ocean", next: [102, 105] },
@@ -210,7 +317,7 @@ const mapConfig = [
     { id: 115, quad: 1, x: 4, y: 7, name: " ", type: "ocean", next: [113, 310] },
     { id: 116, quad: 1, x: 7, y: 7, name: "R", type: "station station-t0", next: [114] },
 
-    // --- ⚪ 右上卡片 (white - quad: 2) ---
+    // --- ⚪ 右上 (white - quad: 2) ---
     { id: 201, quad: 2, x: 1, y: 4, name: " ", type: "ocean", next: [202, 110] },
     { id: 202, quad: 2, x: 2, y: 3, name: " ", type: "ocean", next: [203, 201] },
     { id: 203, quad: 2, x: 3, y: 3, name: " ", type: "ocean", next: [206, 202] },
@@ -225,7 +332,7 @@ const mapConfig = [
     { id: 212, quad: 2, x: 6, y: 4, name: " ", type: "ocean", next: [213, 211] },
     { id: 213, quad: 2, x: 7, y: 4, name: " ", type: "ocean", next: [212] },
 
-    // --- 🟩 左下卡片 (green - quad: 3) ---
+    // --- 🟩 左下 (green - quad: 3) ---
     { id: 301, quad: 3, x: 4, y: 7, name: "G", type: "start-team2", next: [302] },
     { id: 302, quad: 3, x: 4, y: 6, name: " ", type: "ocean", next: [303] },
     { id: 303, quad: 3, x: 4, y: 5, name: " ", type: "ocean", next: [304, 302] },
@@ -241,7 +348,7 @@ const mapConfig = [
     { id: 313, quad: 3, x: 1, y: 4, name: " ", type: "ocean", next: [312] },
     { id: 314, quad: 3, x: 7, y: 1, name: "G", type: "station station-t2", next: [308] },
 
-    // --- 🟦 右下卡片 (blue - quad: 4) ---
+    // --- 🟦 右下 (blue - quad: 4) ---
     { id: 401, quad: 4, x: 4, y: 7, name: "B", type: "start-team1", next: [402] },
     { id: 402, quad: 4, x: 4, y: 6, name: " ", type: "ocean", next: [403] },
     { id: 403, quad: 4, x: 4, y: 5, name: " ", type: "ocean", next: [404] },
@@ -261,12 +368,55 @@ const mapConfig = [
 
 function showMsg(m, cb) { if(m) setTimeout(() => { alert(m); if(cb) cb(); }, 100); }
 
+function selectPlayerCount(count) {
+    let selectedPlayers = [];
+    if (count === 2) {
+        selectedPlayers = [allPlayersTemplate[0], allPlayersTemplate[2]]; // P1(紅) vs P3(藍)
+    } else if (count === 3) {
+        selectedPlayers = [allPlayersTemplate[0], allPlayersTemplate[2], allPlayersTemplate[4]]; // 🟥🟦🟩 三邊大混戰
+    } else if (count === 4) {
+        selectedPlayers = [allPlayersTemplate[0], allPlayersTemplate[1], allPlayersTemplate[2], allPlayersTemplate[3]]; // 2v2 陣營對抗
+    } else if (count === 5) {
+        selectedPlayers = [allPlayersTemplate[0], allPlayersTemplate[1], allPlayersTemplate[2], allPlayersTemplate[3], allPlayersTemplate[4]];
+    } else {
+        selectedPlayers = allPlayersTemplate;
+    }
+
+    activePlayers = JSON.parse(JSON.stringify(selectedPlayers));
+    document.getElementById("setup-overlay").style.display = "none";
+    
+    adjustScoreBoardUI();
+    initGame();
+}
+
+function adjustScoreBoardUI() {
+    let hasTeam0 = activePlayers.some(p => p.team === 0);
+    let hasTeam1 = activePlayers.some(p => p.team === 1);
+    let hasTeam2 = activePlayers.some(p => p.team === 2);
+    
+    document.getElementById("score-box-t0").style.display = hasTeam0 ? "block" : "none";
+    document.getElementById("score-box-t1").style.display = hasTeam1 ? "block" : "none";
+    document.getElementById("score-box-t2").style.display = hasTeam2 ? "block" : "none";
+}
+
+function initGame() {
+    initMapData();
+    activePlayers.forEach(p => {
+        p.hand = [];
+        for(let i=0; i<4; i++) {
+            p.hand.push(cardPool[Math.floor(Math.random() * cardPool.length)]);
+        }
+    });
+    renderBoard();
+}
+
+// 🛠️ 垃圾比例調高關鍵：調大 rand 篩選範圍（原 0.45 提升至 0.65，約 53% 滿載垃圾率）
 function initMapData() {
     mapConfig.forEach(cell => {
         if (cell.type === "ocean") {
             let rand = Math.random();
-            if (rand < 0.12) { cell.type = "event-cell"; cell.name = "⚡"; }
-            else if (rand < 0.45) { cell.garbage = { ...garbageTypes[Math.floor(Math.random() * garbageTypes.length)] }; }
+            if (rand < 0.12) { cell.type = "event-cell"; cell.name = "!"; }
+            else if (rand < 0.65) { cell.garbage = { ...garbageTypes[Math.floor(Math.random() * garbageTypes.length)] }; }
         }
     });
 }
@@ -287,7 +437,7 @@ function renderBoard() {
 
 function updateUI() {
     document.querySelectorAll('.player-container').forEach(el => el.innerHTML = '');
-    players.forEach(p => {
+    activePlayers.forEach(p => {
         const container = document.querySelector(`#cell-${p.position} .player-container`);
         if (container) {
             const t = document.createElement("div"); t.className = `player-token t${p.team}-token`; t.innerText = p.name;
@@ -295,8 +445,9 @@ function updateUI() {
         }
     });
     for (let i = 0; i < 3; i++) document.getElementById(`t${i}-score`).innerText = teams[i].score;
-    document.getElementById("p-hp-info").innerHTML = players.map(p => `<div>${p.name}:${p.hp}❤ ${p.trap?'🕸️':''}(🎒${p.bag.length}/3)</div>`).join("");
-    document.getElementById("current-turn").innerText = `${players[currentTurnPlayer].name} 的回合`;
+    
+    document.getElementById("p-hp-info").innerHTML = activePlayers.map(p => `<div>${p.name}:${p.hp} HP${p.trap?'🕸️':''}(🎒${p.bag.length}/3)</div>`).join("");
+    document.getElementById("current-turn").innerText = `${activePlayers[currentTurnPlayer].name} 的回合`;
     renderHand();
     checkAllGarbageCleared();
 }
@@ -353,7 +504,7 @@ function clearSelectionUI() {
 }
 
 function rollDice() {
-    const p = players[currentTurnPlayer];
+    const p = activePlayers[currentTurnPlayer];
     if (p.trap) { showMsg(`${p.name} 脫困成功！`); p.trap = false; endMovePhase(); return; }
     let m = globalSonarEffect > 0 ? 1 : globalMaxSteps;
     const dice = Math.floor(Math.random() * m) + 1;
@@ -373,7 +524,6 @@ function checkGrid(player) {
     const c = mapConfig.find(cfg => cfg.id === player.position);
     if (!c) return;
 
-    // 1. 撿垃圾判定
     if((c.type === "ocean" || c.type === "event-cell") && c.garbage) {
         if(player.bag.length >= 3) { 
             showMsg(`${player.name} 背包滿了！`); 
@@ -385,13 +535,11 @@ function checkGrid(player) {
         }
     }
 
-    // 2. 專屬顏色回收站判定 (修正重點 🚨)
     if(c.type.includes("station") && player.bag.length > 0) {
-        // 檢查該站點是否符合玩家的隊伍顏色
         let isCorrectStation = false;
-        if (player.team === 0 && c.type.includes("station-t0")) isCorrectStation = true; // 紅隊
-        if (player.team === 1 && c.type.includes("station-t1")) isCorrectStation = true; // 藍隊
-        if (player.team === 2 && c.type.includes("station-t2")) isCorrectStation = true; // 綠隊
+        if (player.team === 0 && c.type.includes("station-t0")) isCorrectStation = true; 
+        if (player.team === 1 && c.type.includes("station-t1")) isCorrectStation = true; 
+        if (player.team === 2 && c.type.includes("station-t2")) isCorrectStation = true; 
 
         if (isCorrectStation) {
             let sc = player.bag.reduce((s, g) => s + g.score, 0); 
@@ -403,17 +551,19 @@ function checkGrid(player) {
         }
     }
 
-    // 3. 事件格子判定
-    if(c.type === "event-cell" || c.name === "⚡") {
+    if(c.type === "event-cell" || c.name === "!") {
         const e = eventPool[Math.floor(Math.random()*eventPool.length)];
         if(e.id === "evt_whale") { 
             pendingJudgePlayer = player; 
             document.getElementById("judge-box").style.display = "block"; 
         } else {
-            showMsg(`⚡事件：${e.name}\n${e.desc}`);
+            showMsg(`!事件：${e.name}\n${e.desc}`);
             if(e.id === "evt_straw") { teams[player.team].score += 1; }
-            else if(e.id === "evt_oil") { players.forEach(pl => pl.hp = Math.max(0, pl.hp - 1)); globalMaxSteps = 2; }
-            else if(e.id === "evt_net") { let target = players[Math.floor(Math.random()*6)]; if(target.id!==player.id) target.trap = true; }
+            else if(e.id === "evt_oil") { activePlayers.forEach(pl => pl.hp = Math.max(0, pl.hp - 1)); globalMaxSteps = 2; }
+            else if(e.id === "evt_net") { 
+                let target = activePlayers[Math.floor(Math.random()*activePlayers.length)]; 
+                if(target.id!==player.id) target.trap = true; 
+            }
             else if(e.id === "evt_sonar") { globalSonarEffect = 2; }
             else if(e.id === "evt_earthquake") { player.position = mapConfig[Math.floor(Math.random()*mapConfig.length)].id; }
             else if(e.id === "evt_turtles") { teams[player.team].score = Math.max(0, teams[player.team].score - 3); }
@@ -421,52 +571,129 @@ function checkGrid(player) {
     }
 }
 
+// 🎒 內收式核心邏輯：外露卡片名稱、點擊展開詳細說明資訊
 function renderHand() {
     const box = document.getElementById("hand-cards"); box.innerHTML = "";
-    teams[players[currentTurnPlayer].team].hand.forEach((c, i) => {
-        const d = document.createElement("div"); d.className = `card-option ${selectedCardIndex === i ? 'selected' : ''}`;
-        d.onclick = () => { selectedCardIndex = i; renderHand(); document.getElementById("card-btn").disabled = false; };
-        d.innerHTML = `<b>${c.name}</b><span>${c.desc}</span>`; box.appendChild(d);
+    const p = activePlayers[currentTurnPlayer];
+    
+    p.hand.forEach((c, i) => {
+        const d = document.createElement("div"); 
+        d.className = `card-option ${selectedCardIndex === i ? 'selected' : ''}`;
+        
+        d.onclick = () => { 
+            selectedCardIndex = i; 
+            renderHand(); 
+            document.getElementById("card-btn").disabled = false; 
+            
+            // 升起並填入詳細卡片說明
+            document.getElementById("drawer-card-name").innerText = c.name;
+            document.getElementById("drawer-card-desc").innerText = c.desc;
+            document.getElementById("desc-drawer").classList.add("expanded");
+        };
+        
+        d.innerHTML = `<span>${c.name.split(" ")[0]}</span>`; // 只渲染外露卡片大名或Emoji
+        box.appendChild(d);
     });
 }
 
+function closeDrawer() {
+    document.getElementById("desc-drawer").classList.remove("expanded");
+}
+
 function playCard() {
-    const p = players[currentTurnPlayer]; const team = teams[p.team]; const c = team.hand[selectedCardIndex];
+    const p = activePlayers[currentTurnPlayer]; const c = p.hand[selectedCardIndex];
     
-    if(c.id === "shrimp") { 
-        processPlayerMovement(p, 2); 
+    if(c.id === "shrimp") {
+        const availableIds = activePlayers.map(pl => pl.id).join(", ");
+        showMsg(`使用了 🦐 爆炸蝦！\n在場玩家 ID：(${availableIds})`, () => {
+            const targetId = prompt(`請輸入要攻擊的玩家ID`);
+            const target = activePlayers.find(pl => pl.id === parseInt(targetId));
+            if (target && target.id !== p.id) {
+                target.hp = Math.max(0, target.hp - 2);
+                p.hand.splice(selectedCardIndex, 1);
+                p.hand.push(cardPool[Math.floor(Math.random()*cardPool.length)]);
+                renderHand(); updateUI(); endTurn();
+            } else { showMsg("無效的玩家ID或不能選擇自己！"); }
+        });
     }
-    else if(c.id === "shark") { 
-        processPlayerMovement(p, 4); 
+    else if(c.id === "shark") {
+        const availableIds = activePlayers.map(pl => pl.id).join(", ");
+        showMsg(`使用了 🦈 冰凍鯊！\n在場玩家 ID：(${availableIds})`, () => {
+            const targetId = prompt(`請輸入要偷取的玩家ID`);
+            const target = activePlayers.find(pl => pl.id === parseInt(targetId));
+            if (target && target.id !== p.id) {
+                if (target.bag.length > 0 && p.bag.length < 3) {
+                    const stolen = target.bag.pop();
+                    p.bag.push(stolen);
+                    p.hand.splice(selectedCardIndex, 1);
+                    p.hand.push(cardPool[Math.floor(Math.random()*cardPool.length)]);
+                    renderHand(); updateUI(); showMsg(`成功偷取 ${target.name} 的 ${stolen.name}！`); endTurn();
+                } else { showMsg("無法偷取！對方背包空了或你自己滿了。"); }
+            } else { showMsg("無效的玩家ID！"); }
+        });
     }
-    else {
-        if(c.id === "starfish") { p.hp = Math.min(5, p.hp + 1); }
-        else if(c.id === "whale") { players.forEach(pl => pl.hp = 5); showMsg("全體玩家血量補滿！"); }
-        else if(c.id === "turtle") { showMsg("本輪將免疫所有負面事件效果！"); }
-        else if(c.id === "octopus") { 
-            let target = players[Math.floor(Math.random()*6)]; 
-            while(target.team === p.team) target = players[Math.floor(Math.random()*6)]; 
-            target.trap = true; showMsg(`${target.name} 被章魚墨困住了！`); 
-        }
-        else if(c.id === "shell") {
-            let nearestGarbageCell = null; let minDist = Infinity;
-            mapConfig.forEach(cell => {
-                if (cell.garbage) {
-                    const currentCell = mapConfig.find(m => m.id === p.position);
-                    const dist = Math.abs(cell.x - currentCell.x) + Math.abs(cell.y - currentCell.y);
-                    if (dist < minDist) { minDist = dist; nearestGarbageCell = cell; }
-                }
+    else if(c.id === "starfish") {
+        showMsg("使用了 ⭐ 生命之星！如果你剛被攻擊，可以恢復1HP，否則前進1步。", () => {
+            if (p.hp < 5) { p.hp = Math.min(5, p.hp + 1); showMsg("你恢復了1HP！"); } 
+            else { processPlayerMovement(p, 1); }
+            p.hand.splice(selectedCardIndex, 1); p.hand.push(cardPool[Math.floor(Math.random()*cardPool.length)]);
+            renderHand(); updateUI(); if (p.hp < 5) endTurn(); 
+        });
+    }
+    else if(c.id === "whale") {
+        showMsg("使用了 🐋 鯨心膽跳！全隊友/個人 HP 補滿！", () => {
+            activePlayers.forEach(pl => { if (pl.team === p.team) pl.hp = 5; });
+            p.hand.splice(selectedCardIndex, 1); p.hand.push(cardPool[Math.floor(Math.random()*cardPool.length)]);
+            renderHand(); updateUI(); endTurn();
+        });
+    }
+    else if(c.id === "turtle") {
+        showMsg("使用了 🐢 槓龜！移動到你所屬隊伍的專屬回收站進行回收！", () => {
+            p.trap = false;
+            const targetStation = mapConfig.find(cell => cell.type.includes(`station-t${p.team}`));
+            if(targetStation) p.position = targetStation.id;
+            p.hand.splice(selectedCardIndex, 1); p.hand.push(cardPool[Math.floor(Math.random()*cardPool.length)]);
+            renderHand(); updateUI(); checkGrid(p); endTurn();
+        });
+    }
+    else if(c.id === "octopus") {
+        const availableIds = activePlayers.filter(pl => pl.team !== p.team).map(pl => pl.id).join(", ");
+        if(!availableIds) { showMsg("目前沒有敵方玩家可以選！卡片保留。"); return; }
+        showMsg(`使用了 🐙 章魚墨客！\n可選敵方玩家 ID：(${availableIds})`, () => {
+            const attackerId = prompt("請輸入要使其暫停一回合的玩家ID");
+            const attacker = activePlayers.find(pl => pl.id === parseInt(attackerId) && pl.team !== p.team);
+            if (attacker) {
+                attacker.trap = true;
+                p.hand.splice(selectedCardIndex, 1); p.hand.push(cardPool[Math.floor(Math.random()*cardPool.length)]);
+                renderHand(); updateUI(); showMsg(`已用章魚墨困住 ${attacker.name}！`); endTurn();
+            } else { showMsg("無效的敵方玩家ID！"); }
+        });
+    }
+    else if(c.id === "shell") {
+        showMsg("使用了 🐚 貝感欣慰！撿起地圖上前後兩格的吸管（若有），每一垃圾可變為兩積分！", () => {
+            const currentIndex = mapConfig.findIndex(cell => cell.id === p.position);
+            const forwardCell = mapConfig[currentIndex + 1]; const backwardCell = mapConfig[currentIndex - 1];
+            let pointsGained = 0;
+            [forwardCell, backwardCell].forEach(cell => {
+                if (cell && cell.garbage && cell.garbage.key === "straw") { pointsGained += 2; cell.garbage = null; const el = document.querySelector(`#cell-${cell.id} .cell-info`); if(el) el.innerText = ""; }
             });
-            if (nearestGarbageCell) {
-                p.position = nearestGarbageCell.id; 
-                showMsg(`傳送成功！`);
-                checkGrid(p);
-            } else { showMsg("附近沒有垃圾可以撿了！"); }
-        }
-        // 扣除並補發卡片，並流暢切換回合
-        team.hand.splice(selectedCardIndex, 1); 
-        team.hand.push(cardPool[Math.floor(Math.random()*cardPool.length)]);
-        endTurn();
+            if (pointsGained > 0) { teams[p.team].score += pointsGained; showMsg(`成功淨化吸管，獲得 ${pointsGained} 分！`); } 
+            else { showMsg("前後相鄰格子內沒有吸管垃圾可淨化！"); }
+            p.hand.splice(selectedCardIndex, 1); p.hand.push(cardPool[Math.floor(Math.random()*cardPool.length)]);
+            renderHand(); updateUI(); endTurn();
+        });
+    }
+    else if(c.id === "pleco") {
+        showMsg("使用了 🐟 垃圾清道夫！若是當前格子遇到3分以下的垃圾，可將垃圾變為1HP，垃圾作廢！", () => {
+            const currentCell = mapConfig.find(cell => cell.id === p.position);
+            if (currentCell && currentCell.garbage && currentCell.garbage.score <= 3) {
+                p.hp = Math.min(5, p.hp + 1); currentCell.garbage = null;
+                const el = document.querySelector(`#cell-${currentCell.id} .cell-info`); if(el) el.innerText = "";
+                showMsg("成功清道！垃圾作廢，你恢復了1HP！");
+            } else { showMsg("這格沒有3分以下的垃圾可清道！"); }
+            p.hand.splice(selectedCardIndex, 1); p.hand.push(cardPool[Math.floor(Math.random()*cardPool.length)]);
+            renderHand(); updateUI(); endTurn();
+        });
     }
 }
 
@@ -479,16 +706,17 @@ function handleJudge(win) {
 function skipCard() { endTurn(); }
 
 function endTurn() {
-    currentTurnPlayer = (currentTurnPlayer + 1) % players.length; selectedCardIndex = null;
+    currentTurnPlayer = (currentTurnPlayer + 1) % activePlayers.length; selectedCardIndex = null;
     document.getElementById("roll-btn").disabled = false; document.getElementById("card-btn").disabled = true;
     document.getElementById("skip-card-btn").disabled = true; document.getElementById("dice-result").innerText = "";
+    closeDrawer(); // 👈 切換回合時，自動把前一個人的說明抽屜向下收合隱藏
     updateUI();
 }
 
 function checkAllGarbageCleared() {
     if (gameEnded) return;
     const remainingGarbage = mapConfig.filter(cell => cell.garbage).length;
-    if (remainingGarbage === 0) {
+    if (remainingGarbage === 0 && activePlayers.length > 0) {
         gameEnded = true;
         document.getElementById("roll-btn").disabled = true;
         document.getElementById("card-btn").disabled = true;
@@ -504,10 +732,6 @@ function checkAllGarbageCleared() {
         }, 500);
     }
 }
-
-initMapData();
-teams.forEach(t => { for(let i=0; i<4; i++) t.hand.push(cardPool[Math.floor(Math.random()*cardPool.length)]); });
-renderBoard();
 </script>
 </body>
 </html>
