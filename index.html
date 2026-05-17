@@ -202,6 +202,7 @@ body {
 .setup-btn-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; width:100%; max-width:300px; margin-bottom:30px; }
 .setup-btn { background:#444; color:white; height:50px; font-size:16px; border-radius:6px; font-weight:bold; border: none; }
 .setup-btn:active { background:#666; }
+.setup-btn.ai-btn { background: #b45309; grid-column: span 3; } /* AI獨立顏色 */
 </style>
 </head>
 <body>
@@ -210,6 +211,7 @@ body {
     <h1 style="font-size:24px; margin-bottom:10px; color:#f59e0b; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">🌊 Undersea Big Rich Man</h1>
     <p style="font-size:14px; color:#ccc; margin-bottom:25px;">請選擇本次參與潛水清理任務的玩家人數：</p>
     <div class="setup-btn-grid">
+        <button class="setup-btn ai-btn" onclick="selectPlayerCount('ai')">單人 vs 電腦對戰</button>
         <button class="setup-btn" onclick="selectPlayerCount(2)">2 人</button>
         <button class="setup-btn" onclick="selectPlayerCount(3)">3 人</button>
         <button class="setup-btn" onclick="selectPlayerCount(4)">4 人</button>
@@ -270,7 +272,7 @@ body {
         <div class="action-row">
             <button id="roll-btn" onclick="rollDice()">🎲 擲骰子</button>
             <button id="card-btn" onclick="playCard()" disabled>🧬 使用卡片</button>
-            <button id="skip-card-btn" onclick="skipCard()" disabled>結束回合</button>  12
+            <button id="skip-card-btn" onclick="skipCard()" disabled>結束回合</button>
         </div>
     </div>
 </div>
@@ -280,7 +282,6 @@ const garbageTypes = [
     { key: "tire", name: "輪胎", score: 5, icon: "🛞" ,weight: 6}, { key: "net", name: "漁網", score: 4, icon: "🕸️" ,weight: 8},
     { key: "bag", name: "塑膠袋", score: 3, icon: "🛍️" ,weight: 13}, { key: "bottle", name: "寶特瓶", score: 2, icon: "🍾" ,weight: 20},
     { key: "straw", name: "吸管", score: 1, icon: "🥤" ,weight: 28}
-    //垃圾產量key:"tire"<key:"net"<key:"bag"<key:"bottle"<key:"straw"
 ];
 const cardPool = [
     { id: "shrimp", name: "🦐 爆炸蝦", desc: "前進 2 格撿起垃圾，並扣指定玩家2HP" }, { id: "shark", name: "🦈 冰凍鯊", desc: "強迫指定玩家將目前手上的垃圾無條件送給自己(若背包已達上限將無效)" },
@@ -288,7 +289,7 @@ const cardPool = [
     { id: "turtle", name: "🐢 槓龜", desc: "當受到攻擊可抵擋攻擊，並且直接移動到回收站進行回收(受到攻擊時即時彈出視窗)" }, { id: "octopus", name: "🐙 章魚墨客", desc: "當受到攻擊可抵擋攻擊，並且使攻擊方暫停一回合(受到攻擊時即時彈出視窗)" },
     { id: "shell", name: "🐚 貝感欣慰", desc: "能撿起前後兩格的垃圾(限吸管)每一垃圾可變成兩積分，淨化過的垃圾即作廢" }, { id: "pleco", name: "🐟 垃圾清道夫", desc: "若是遇到3分以下的垃圾，可將垃圾變為1HP，垃圾作廢" }
 ];
-const chancePool = [//機會都是好的
+const chancePool = [
     {id: "chc_sonar", name: "聲納增強", desc: "聲納效果提升！本回合內，擲骰子後可額外移動 1 格。"},
     {id: "chc_tide", name: "潮汐之力", desc: "潮水幫助你！立刻向前推進 2 格。"},
     {id: "chc_gale", name: "海風加持", desc: "順風而行！本回合內，移動時可選擇多一個方向。"},
@@ -309,18 +310,18 @@ const destinyPool=[
 ]
 
 let currentTurnPlayer = 0; let selectedCardIndex = null; let globalMaxSteps = 3; let globalSonarEffect = 0; let pendingJudgePlayer = null;
-let remainingSteps = 0; let gameEnded = false; 
+let remainingSteps = 0; let gameEnded = false; let isAiMode = false;
 
 // 防禦攔截專用暫存暫態
 let currentAttackContext = null;
 
 const allPlayersTemplate = [
-    { id: 1, name: "P1", team: 0, hp: 5, position: 101, trap: false, bag: [], hand: [] }, 
-    { id: 2, name: "P2", team: 0, hp: 5, position: 101, trap: false, bag: [], hand: [] }, 
-    { id: 3, name: "P3", team: 1, hp: 5, position: 401, trap: false, bag: [], hand: [] }, 
-    { id: 4, name: "P4", team: 1, hp: 5, position: 401, trap: false, bag: [], hand: [] }, 
-    { id: 5, name: "P5", team: 2, hp: 5, position: 301, trap: false, bag: [], hand: [] }, 
-    { id: 6, name: "P6", team: 2, hp: 5, position: 301, trap: false, bag: [], hand: [] }  
+    { id: 1, name: "P1", team: 0, hp: 5, position: 101, trap: false, bag: [], hand: [], isBot: false }, 
+    { id: 2, name: "P2", team: 0, hp: 5, position: 101, trap: false, bag: [], hand: [], isBot: false }, 
+    { id: 3, name: "P3", team: 1, hp: 5, position: 401, trap: false, bag: [], hand: [], isBot: false }, 
+    { id: 4, name: "P4", team: 1, hp: 5, position: 401, trap: false, bag: [], hand: [], isBot: false }, 
+    { id: 5, name: "P5", team: 2, hp: 5, position: 301, trap: false, bag: [], hand: [], isBot: false }, 
+    { id: 6, name: "P6", team: 2, hp: 5, position: 301, trap: false, bag: [], hand: [], isBot: false }  
 ];
 
 let activePlayers = []; const teams = [{ score: 0 }, { score: 0 }, { score: 0 }]; 
@@ -407,11 +408,25 @@ function getRandomGarbageByWeight() {
 
 function selectPlayerCount(count) {
     let selectedPlayers = [];
-    if (count === 2) selectedPlayers = [allPlayersTemplate[0], allPlayersTemplate[2]];
-    else if (count === 3) selectedPlayers = [allPlayersTemplate[0], allPlayersTemplate[2], allPlayersTemplate[4]];
-    else if (count === 4) selectedPlayers = [allPlayersTemplate[0], allPlayersTemplate[1], allPlayersTemplate[2], allPlayersTemplate[3]];
-    else if (count === 5) selectedPlayers = [allPlayersTemplate[0], allPlayersTemplate[1], allPlayersTemplate[2], allPlayersTemplate[3], allPlayersTemplate[4]];
-    else selectedPlayers = allPlayersTemplate;
+    if (count === 'ai') {
+        isAiMode = true;
+        // P1 是人類玩家(紅隊)，P2 是電腦(藍隊)
+        let p1 = JSON.parse(JSON.stringify(allPlayersTemplate[0]));
+        let p2 = JSON.parse(JSON.stringify(allPlayersTemplate[2]));
+        let p3 = JSON.parse(JSON.stringify(allPlayersTemplate[4]));
+        p2.name = "🤖電腦";
+        p2.isBot = true;
+        p3.name = "🤖電腦2";
+        p3.isBot = true;
+        selectedPlayers = [p1, p2, p3];
+    } else {
+        isAiMode = false;
+        if (count === 2) selectedPlayers = [allPlayersTemplate[0], allPlayersTemplate[2]];
+        else if (count === 3) selectedPlayers = [allPlayersTemplate[0], allPlayersTemplate[2], allPlayersTemplate[4]];
+        else if (count === 4) selectedPlayers = [allPlayersTemplate[0], allPlayersTemplate[1], allPlayersTemplate[2], allPlayersTemplate[3]];
+        else if (count === 5) selectedPlayers = [allPlayersTemplate[0], allPlayersTemplate[1], allPlayersTemplate[2], allPlayersTemplate[3], allPlayersTemplate[4]];
+        else selectedPlayers = allPlayersTemplate;
+    }
 
     activePlayers = JSON.parse(JSON.stringify(selectedPlayers));
     document.getElementById("setup-overlay").style.display = "none";
@@ -432,6 +447,7 @@ function initGame() {
         for(let i=0; i<4; i++) p.hand.push(cardPool[Math.floor(Math.random() * cardPool.length)]);
     });
     renderBoard();
+    checkBotTurn();
 }
 
 function initMapData() {
@@ -464,14 +480,20 @@ function updateUI() {
     activePlayers.forEach(p => {
         const container = document.querySelector(`#cell-${p.position} .player-container`);
         if (container) {
-            const t = document.createElement("div"); t.className = `player-token t${p.team}-token`; t.innerText = p.name;
+            const t = document.createElement("div"); t.className = `player-token t${p.team}-token`; t.innerText = p.name.replace("🤖", "");
             container.appendChild(t);
         }
     });
     for (let i = 0; i < 3; i++) document.getElementById(`t${i}-score`).innerText = teams[i].score;
     document.getElementById("p-hp-info").innerHTML = activePlayers.map(p => `<div>${p.name}:${p.hp} HP${p.trap?'🕸️':''}(🎒${p.bag.length}/3)</div>`).join("");
     document.getElementById("current-turn").innerText = `${activePlayers[currentTurnPlayer].name} 的回合`;
-    renderHand();
+    
+    // 如果是Bot，隱藏下方人類手牌的高亮與控制
+    if (activePlayers[currentTurnPlayer].isBot) {
+        document.getElementById("hand-cards").innerHTML = "<div style='color:#aaa; font-size:12px; padding:5px;'>🤖 電腦正在思考中...</div>";
+    } else {
+        renderHand();
+    }
     checkAllGarbageCleared();
 }
 
@@ -496,16 +518,33 @@ function executeStepByStep(player) {
         updateUI();
         setTimeout(() => { executeStepByStep(player); }, 220);
     } else {
-        document.getElementById("choice-overlay").style.display = "block";
-        cellData.next.forEach(nextId => {
-            const targetCell = document.getElementById(`cell-${nextId}`);
-            if (targetCell) {
-                targetCell.classList.add("selectable-path");
-                targetCell.onclick = () => {
-                    clearSelectionUI(); player.position = nextId; remainingSteps--; updateUI(); executeStepByStep(player);
-                };
+        if (player.isBot) {
+            // 🤖 電腦自動選路邏輯：優先走向有垃圾前進的方向
+            let chosenId = cellData.next[Math.floor(Math.random() * cellData.next.length)];
+            for (let nextId of cellData.next) {
+                let targetCell = mapConfig.find(c => c.id === nextId);
+                if (targetCell && targetCell.garbage) {
+                    chosenId = nextId; // 發現有垃圾，優先走這裡
+                    break;
+                }
             }
-        });
+            player.position = chosenId;
+            remainingSteps--;
+            updateUI();
+            setTimeout(() => { executeStepByStep(player); }, 220);
+        } else {
+            // 人類玩家點擊選路
+            document.getElementById("choice-overlay").style.display = "block";
+            cellData.next.forEach(nextId => {
+                const targetCell = document.getElementById(`cell-${nextId}`);
+                if (targetCell) {
+                    targetCell.classList.add("selectable-path");
+                    targetCell.onclick = () => {
+                        clearSelectionUI(); player.position = nextId; remainingSteps--; updateUI(); executeStepByStep(player);
+                    };
+                }
+            });
+        }
     }
 }
 
@@ -516,7 +555,12 @@ function clearSelectionUI() {
 
 function rollDice() {
     const p = activePlayers[currentTurnPlayer];
-    if (p.trap) { showMsg(`${p.name} 脫困成功！`); p.trap = false; endMovePhase(); return; }
+    if (p.trap) { 
+        showMsg(`${p.name} 脫困成功！`); 
+        p.trap = false; 
+        endMovePhase(); 
+        return; 
+    }
     let m = globalSonarEffect > 0 ? 1 : globalMaxSteps;
     const dice = Math.floor(Math.random() * m) + 1;
     document.getElementById("dice-result").innerText = `🎲 擲出 ${dice} 點`;
@@ -524,9 +568,18 @@ function rollDice() {
 }
 
 function endMovePhase() {
-    updateUI(); document.getElementById("roll-btn").disabled = true; document.getElementById("skip-card-btn").disabled = false;
+    updateUI(); 
+    document.getElementById("roll-btn").disabled = true; 
     if (globalSonarEffect > 0) globalSonarEffect--;
     globalMaxSteps = 3;
+
+    const p = activePlayers[currentTurnPlayer];
+    if (p.isBot) {
+        // 🤖 電腦移動完後，思考是否使用手牌
+        setTimeout(() => { botPlayCardPhase(p); }, 600);
+    } else {
+        document.getElementById("skip-card-btn").disabled = false;
+    }
 }
 
 function checkGrid(player) {
@@ -534,15 +587,15 @@ function checkGrid(player) {
     if (!c) return;
 
     if((c.type === "ocean" || c.type === "event-cell") && c.garbage) {
-        if(player.bag.length >= 3) { showMsg(`${player.name} 背包滿了！`); } 
+        if(player.bag.length >= 3) { if(!player.isBot) showMsg(`${player.name} 背包滿了！`); } 
         else { player.bag.push(c.garbage); showMsg(`${player.name} 撿到 ${c.garbage.name}`); c.garbage = null; document.querySelector(`#cell-${player.position} .cell-info`).innerText = ""; }
     }
     if(c.type.includes("station") && player.bag.length > 0) {
         let isCorrectStation = (player.team === 0 && c.type.includes("station-t0")) || (player.team === 1 && c.type.includes("station-t1")) || (player.team === 2 && c.type.includes("station-t2"));
         if (isCorrectStation) {
             let sc = player.bag.reduce((s, g) => s + g.score, 0); teams[player.team].score += sc; player.bag = [];
-            showMsg(`🎉 成功抵達本隊專屬回收站！回收成功，獲得 ${sc} 分！`);
-        } else { showMsg(`⚠️ 這是其他隊伍的回收站！${player.name} 無法在此回收垃圾。`); }
+            showMsg(`🎉 ${player.name} 成功抵達本隊專屬回收站！回收成功，獲得 ${sc} 分！`);
+        } else { if(!player.isBot) showMsg(`⚠️ 這是其他隊伍的回收站！${player.name} 無法在此回收垃圾。`); }
     }
     if(c.type === "chance-cell" || c.name === "!") {
         const ch = chancePool[Math.floor(Math.random()*chancePool.length)];
@@ -550,7 +603,7 @@ function checkGrid(player) {
         if(ch.id === "chc_sonar") { globalSonarEffect = 1; }
         else if(ch.id === "chc_tide") { processPlayerMovement(player, 2); }
         else if(ch.id === "chc_gale") { globalMaxSteps = 4; }
-        else if(ch.id === "chc_lucky") { player.hand.push(cardPool[Math.floor(Math.random() * cardPool.length)]); renderHand(); }
+        else if(ch.id === "chc_lucky") { player.hand.push(cardPool[Math.floor(Math.random() * cardPool.length)]); }
         else if(ch.id === "chc_treasure") { teams[player.team].score += 3; updateUI(); }
         else if(ch.id === "chc_current") { processPlayerMovement(player, 1); globalMaxSteps = 4; }
     }
@@ -563,7 +616,7 @@ function checkGrid(player) {
             let maxScore = Math.max(...teams.map(t => t.score));
             activePlayers.forEach(p => { if(teams[p.team].score === maxScore) p.trap = true; });
         }
-        else if(d.id === "dst_lost") { 
+        else if(d.id === "dst_lost" || d.id === "dst_earthquake") { 
             let currentIndex = currentTurnPlayer;
             activePlayers.forEach(p => {
                 if(p.id !== player.id) {
@@ -574,16 +627,6 @@ function checkGrid(player) {
             updateUI();
         }
         else if(d.id === "dst_turtles") { teams[player.team].score = Math.max(0, teams[player.team].score - 3); }
-        else if(d.id === "dst_earthquake") {
-            let currentIndex = currentTurnPlayer;
-            activePlayers.forEach(p => {
-                if(p.id !== player.id) {
-                    p.position = activePlayers[currentIndex].position;
-                    currentIndex = (currentIndex + 1) % activePlayers.length;
-                }
-            });
-            updateUI();
-        }
         else if(d.id === "dst_blessing") { player.hp = Math.min(5, player.hp + 1); }
         else if(d.id === "dst_unblock") { 
             activePlayers.forEach(p => { if(p.team !== player.team) p.position = mapConfig.find(c => c.type.includes(`station-t${p.team}`)).id; });
@@ -597,6 +640,8 @@ function checkGrid(player) {
 function renderHand() {
     const box = document.getElementById("hand-cards"); box.innerHTML = "";
     const p = activePlayers[currentTurnPlayer];
+    if(p.isBot) return;
+
     p.hand.forEach((c, i) => {
         const d = document.createElement("div"); d.className = `card-option ${selectedCardIndex === i ? 'selected' : ''}`;
         d.onclick = () => { 
@@ -610,79 +655,131 @@ function renderHand() {
 
 function closeDrawer() { document.getElementById("desc-drawer").classList.remove("expanded"); }
 
-// 🛠️ 核心修改：攔截攻擊並偵測目標是否有防禦卡（槓龜或章魚）
+// 檢查是否輪到機器人，如果是，自動幫他擲骰子
+function checkBotTurn() {
+    if (gameEnded) return;
+    const p = activePlayers[currentTurnPlayer];
+    if (p.isBot) {
+        document.getElementById("roll-btn").disabled = true;
+        document.getElementById("card-btn").disabled = true;
+        document.getElementById("skip-card-btn").disabled = true;
+        setTimeout(() => {
+            rollDice();
+        }, 1000); // 延遲1秒模擬電腦思考
+    } else {
+        document.getElementById("roll-btn").disabled = false;
+    }
+}
+
+// 🤖 電腦使用卡片的智慧邏輯
+function botPlayCardPhase(botPlayer) {
+    // 找出人類玩家作為目標
+    const humanTarget = activePlayers.find(p => !p.isBot);
+    
+    // 1. 檢查有沒有補血卡，如果自己殘血 (<3 HP) 就用
+    let whaleIndex = botPlayer.hand.findIndex(c => c.id === "whale");
+    if (whaleIndex !== -1 && botPlayer.hp <= 2) {
+        botPlayer.hp = 5;
+        botPlayer.hand.splice(whaleIndex, 1); botPlayer.hand.push(cardPool[Math.floor(Math.random()*cardPool.length)]);
+        showMsg(`🤖電腦 使用了 🐋 鯨心膽跳！將自己的生命值補滿！`);
+        updateUI(); setTimeout(endTurn, 800); return;
+    }
+
+    // 2. 檢查有沒有攻擊卡（爆炸蝦），如果人類血量高，就轟他
+    let shrimpIndex = botPlayer.hand.findIndex(c => c.id === "shrimp");
+    if (shrimpIndex !== -1 && humanTarget && humanTarget.hp > 0) {
+        selectedCardIndex = shrimpIndex; // 模擬選中該卡
+        processPlayerMovement(botPlayer, 2); // 爆炸蝦前進2格效果
+        setTimeout(() => {
+            checkAndTriggerDefense(botPlayer, humanTarget, 'shrimp', () => {
+                humanTarget.hp = Math.max(0, humanTarget.hp - 2);
+                botPlayer.hand.splice(shrimpIndex, 1); botPlayer.hand.push(cardPool[Math.floor(Math.random()*cardPool.length)]);
+                showMsg(`🦐 爆炸蝦成功重創了 ${humanTarget.name} (-2HP)！`);
+                updateUI(); endTurn();
+            });
+        }, 600);
+        return;
+    }
+
+    // 3. 檢查有沒有小偷卡（冰凍鯊），如果人類背包有垃圾，且自己背包有空間就偷
+    let sharkIndex = botPlayer.hand.findIndex(c => c.id === "shark");
+    if (sharkIndex !== -1 && humanTarget && humanTarget.bag.length > 0 && botPlayer.bag.length < 3) {
+        selectedCardIndex = sharkIndex;
+        checkAndTriggerDefense(botPlayer, humanTarget, 'shark', () => {
+            const stolen = humanTarget.bag.pop(); botPlayer.bag.push(stolen);
+            botPlayer.hand.splice(sharkIndex, 1); botPlayer.hand.push(cardPool[Math.floor(Math.random()*cardPool.length)]);
+            showMsg(`🦈 冰凍鯊強行奪取了 ${humanTarget.name} 的 ${stolen.name}！`);
+            updateUI(); endTurn();
+        });
+        return;
+    }
+
+    // 沒有合適的卡片要出，直接結束
+    endTurn();
+}
+
 function checkAndTriggerDefense(attacker, target, cardType, onNoDefense) {
-    // 尋找目標手牌中是否有防禦卡
     const hasTurtle = target.hand.findIndex(c => c.id === "turtle");
     const hasOctopus = target.hand.findIndex(c => c.id === "octopus");
 
-    if (hasTurtle !== -1 || hasOctopus !== -1) {
-        // 暫存目前的攻擊上下文環境
+    if ((hasTurtle !== -1 || hasOctopus !== -1) && !target.isBot) {
+        // 如果防禦者是人類，彈窗詢問
         currentAttackContext = { attacker, target, cardType, hasTurtle, hasOctopus, onNoDefense };
-        
-        // 更新防禦詢問彈窗資訊
         document.getElementById("defense-msg").innerHTML = `<b>${attacker.name}</b> 對你使用了 <b>${cardType === 'shrimp' ? '🦐 爆炸蝦' : '🦈 冰凍鯊'}</b>！`;
         const choiceContainer = document.getElementById("defense-choices");
         choiceContainer.innerHTML = "";
 
-        // 如果手上有槓龜
         if (hasTurtle !== -1) {
             const btn = document.createElement("button"); btn.className = "def-btn"; btn.style.background = "#065f46";
             btn.innerText = "🐢 使用【槓龜】(阻擋並直達回收站)";
             btn.onclick = () => executeDefense("turtle"); choiceContainer.appendChild(btn);
         }
-        // 如果手上有章魚
         if (hasOctopus !== -1) {
             const btn = document.createElement("button"); btn.className = "def-btn"; btn.style.background = "#3730a3";
             btn.innerText = "🐙 使用【章魚墨客】(阻擋並使其暫停)";
             btn.onclick = () => executeDefense("octopus"); choiceContainer.appendChild(btn);
         }
-        // 放棄防禦按鈕
         const skipBtn = document.createElement("button"); skipBtn.className = "def-btn"; skipBtn.style.background = "#4b5563";
         skipBtn.innerText = "❌ 不使用，硬吃技能效果";
         skipBtn.onclick = () => executeDefense("skip"); choiceContainer.appendChild(skipBtn);
 
-        // 彈出防禦 UI
         document.getElementById("defense-overlay").style.display = "block";
+    } else if ((hasTurtle !== -1 || hasOctopus !== -1) && target.isBot) {
+        // 🤖 如果被襲擊的是電腦，電腦會自動百分之百發動防禦卡
+        let choice = hasTurtle !== -1 ? "turtle" : "octopus";
+        currentAttackContext = { attacker, target, cardType, hasTurtle, hasOctopus, onNoDefense };
+        executeDefense(choice);
     } else {
-        // 沒有防禦牌，直接執行原本的受擊流程
         onNoDefense();
     }
 }
 
-// 結算防禦選擇
 function executeDefense(choice) {
     document.getElementById("defense-overlay").style.display = "none";
     const ctx = currentAttackContext;
     if (!ctx) return;
 
     if (choice === "turtle") {
-        // 消耗被攻擊者的槓龜牌
         ctx.target.hand.splice(ctx.hasTurtle, 1);
         ctx.target.hand.push(cardPool[Math.floor(Math.random() * cardPool.length)]);
-        // 觸發槓龜效果：阻擋攻擊，直接送去回收站
         ctx.target.trap = false;
         const targetStation = mapConfig.find(cell => cell.type.includes(`station-t${ctx.target.team}`));
         if (targetStation) ctx.target.position = targetStation.id;
         showMsg(`🛡️ ${ctx.target.name} 成功使用【🐢 槓龜】攔截攻擊！安全逃逸至回收站。`);
-        checkGrid(ctx.target); // 抵達回收站自動檢查是否能結算
+        checkGrid(ctx.target);
     } 
     else if (choice === "octopus") {
-        // 消耗被攻擊者的章魚牌
         ctx.target.hand.splice(ctx.hasOctopus, 1);
         ctx.target.hand.push(cardPool[Math.floor(Math.random() * cardPool.length)]);
-        // 觸發章魚效果：阻擋攻擊，攻擊方噴墨暫停一回合
         ctx.attacker.trap = true;
         showMsg(`🛡️ ${ctx.target.name} 成功發動【🐙 章魚墨客】！反手朝 ${ctx.attacker.name} 噴墨，將其困在原地。`);
     } 
     else {
-        // 玩家放棄防禦，直接結算原卡片傷害/偷取效果
         showMsg(`${ctx.target.name} 放棄使用防禦卡。`);
         ctx.onNoDefense();
-        return; // 在對應的攻擊完成後自己會處理卡片扣除與換手
+        return;
     }
 
-    // 如果成功發動防禦，幫發動攻擊者正常扣除並補充當前使用卡
     ctx.attacker.hand.splice(selectedCardIndex, 1);
     ctx.attacker.hand.push(cardPool[Math.floor(Math.random() * cardPool.length)]);
     currentAttackContext = null;
@@ -693,39 +790,42 @@ function playCard() {
     const p = activePlayers[currentTurnPlayer]; const c = p.hand[selectedCardIndex];
     
     if(c.id === "shrimp") {
-        const availableIds = activePlayers.map(pl => pl.id).join(", ");
-        processPlayerMovement(p, 2);// 先移動再攻擊，增加戰術深度
-        showMsg(`使用了 🦐 爆炸蝦！\n在場玩家 ID：(${availableIds})`, () => {
-            const targetId = prompt(`請輸入要攻擊的玩家ID`);
-            const target = activePlayers.find(pl => pl.id === parseInt(targetId));
-            if (target && target.id !== p.id) {
-                // 🚀 攔截：送入即時防禦偵測
-                checkAndTriggerDefense(p, target, 'shrimp', () => {
-                    // 沒防禦時的原效果流程
-                    target.hp = Math.max(0, target.hp - 2);
-                    p.hand.splice(selectedCardIndex, 1); p.hand.push(cardPool[Math.floor(Math.random()*cardPool.length)]);
-                    renderHand(); updateUI(); showMsg(`🦐 爆炸蝦成功重創了 ${target.name} (-2HP)！`); endTurn();
-                });
-            } else { showMsg("無效的玩家ID或不能選擇自己！"); }
-        });
+        const availablePlayers = activePlayers.filter(pl => pl.id !== p.id);
+        processPlayerMovement(p, 2);
+        
+        let target = availablePlayers[0];
+        if (availablePlayers.length > 1) {
+            const availableIds = activePlayers.map(pl => pl.id).join(", ");
+            const targetId = prompt(`使用了 🦐 爆炸蝦！\n在場玩家 ID：(${availableIds})\n請輸入要攻擊的玩家ID`);
+            target = activePlayers.find(pl => pl.id === parseInt(targetId));
+        }
+
+        if (target && target.id !== p.id) {
+            checkAndTriggerDefense(p, target, 'shrimp', () => {
+                target.hp = Math.max(0, target.hp - 2);
+                p.hand.splice(selectedCardIndex, 1); p.hand.push(cardPool[Math.floor(Math.random()*cardPool.length)]);
+                renderHand(); updateUI(); showMsg(`🦐 爆炸蝦成功重創了 ${target.name} (-2HP)！`); endTurn();
+            });
+        } else { showMsg("無效的玩家ID或不能選擇自己！"); }
     }
     else if(c.id === "shark") {
-        const availableIds = activePlayers.map(pl => pl.id).join(", ");
-        showMsg(`使用了 🦈 冰凍鯊！\n在場玩家 ID：(${availableIds})`, () => {
-            const targetId = prompt(`請輸入要偷取的玩家ID`);
-            const target = activePlayers.find(pl => pl.id === parseInt(targetId));
-            if (target && target.id !== p.id) {
-                // 🚀 攔截：送入即時防禦偵測
-                checkAndTriggerDefense(p, target, 'shark', () => {
-                    // 沒防禦時的原效果流程
-                    if (target.bag.length > 0 && p.bag.length < 3) {
-                        const stolen = target.bag.pop(); p.bag.push(stolen);
-                        p.hand.splice(selectedCardIndex, 1); p.hand.push(cardPool[Math.floor(Math.random()*cardPool.length)]);
-                        renderHand(); updateUI(); showMsg(`🦈 冰凍鯊強行奪取了 ${target.name} 的 ${stolen.name}！`); endTurn();
-                    } else { showMsg("無法偷取！對方背包空了或你自己滿了。"); }
-                });
-            } else { showMsg("無效的玩家ID！"); }
-        });
+        const availablePlayers = activePlayers.filter(pl => pl.id !== p.id);
+        let target = availablePlayers[0];
+        if (availablePlayers.length > 1) {
+            const availableIds = activePlayers.map(pl => pl.id).join(", ");
+            const targetId = prompt(`使用了 🦈 冰凍鯊！\n在場玩家 ID：(${availableIds})\n請輸入要偷取的玩家ID`);
+            target = activePlayers.find(pl => pl.id === parseInt(targetId));
+        }
+
+        if (target && target.id !== p.id) {
+            checkAndTriggerDefense(p, target, 'shark', () => {
+                if (target.bag.length > 0 && p.bag.length < 3) {
+                    const stolen = target.bag.pop(); p.bag.push(stolen);
+                    p.hand.splice(selectedCardIndex, 1); p.hand.push(cardPool[Math.floor(Math.random()*cardPool.length)]);
+                    renderHand(); updateUI(); showMsg(`🦈 冰凍鯊強行奪取了 ${target.name} 的 ${stolen.name}！`); endTurn();
+                } else { showMsg("無法偷取！對方背包空了或你自己滿了。"); }
+            });
+        } else { showMsg("無效的玩家ID！"); }
     }
     else if(c.id === "starfish") {
         showMsg("使用了 ⭐ 生命之星！恢復 1 HP，若滿血則前進 1 步。", () => {
@@ -786,6 +886,7 @@ function endTurn() {
     document.getElementById("roll-btn").disabled = false; document.getElementById("card-btn").disabled = true;
     document.getElementById("skip-card-btn").disabled = true; document.getElementById("dice-result").innerText = "";
     closeDrawer(); updateUI();
+    checkBotTurn();
 }
 
 function checkAllGarbageCleared() {
