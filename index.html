@@ -270,16 +270,17 @@ body {
         <div class="action-row">
             <button id="roll-btn" onclick="rollDice()">🎲 擲骰子</button>
             <button id="card-btn" onclick="playCard()" disabled>🧬 使用卡片</button>
-            <button id="skip-card-btn" onclick="skipCard()" disabled>結束回合</button>
+            <button id="skip-card-btn" onclick="skipCard()" disabled>結束回合</button>  12
         </div>
     </div>
 </div>
 
 <script>
 const garbageTypes = [
-    { key: "tire", name: "輪胎", score: 5, icon: "🛞" }, { key: "net", name: "漁網", score: 4, icon: "🕸️" },
-    { key: "bag", name: "塑膠袋", score: 3, icon: "🛍️" }, { key: "bottle", name: "寶特瓶", score: 2, icon: "🍾" },
-    { key: "straw", name: "吸管", score: 1, icon: "🥤" }
+    { key: "tire", name: "輪胎", score: 5, icon: "🛞" ,weight: 8}, { key: "net", name: "漁網", score: 4, icon: "🕸️" ,weight: 10},
+    { key: "bag", name: "塑膠袋", score: 3, icon: "🛍️" ,weight: 15}, { key: "bottle", name: "寶特瓶", score: 2, icon: "🍾" ,weight: 20},
+    { key: "straw", name: "吸管", score: 1, icon: "🥤" ,weight: 28}
+    //垃圾產量key:"tire"<key:"net"<key:"bag"<key:"bottle"<key:"straw"
 ];
 const cardPool = [
     { id: "shrimp", name: "🦐 爆炸蝦", desc: "前進 2 格撿起垃圾，並扣指定玩家2HP" }, { id: "shark", name: "🦈 冰凍鯊", desc: "強迫指定玩家將目前手上的垃圾無條件送給自己(若背包已達上限將無效)" },
@@ -287,15 +288,28 @@ const cardPool = [
     { id: "turtle", name: "🐢 槓龜", desc: "當受到攻擊可抵擋攻擊，並且直接移動到回收站進行回收(受到攻擊時即時彈出視窗)" }, { id: "octopus", name: "🐙 章魚墨客", desc: "當受到攻擊可抵擋攻擊，並且使攻擊方暫停一回合(受到攻擊時即時彈出視窗)" },
     { id: "shell", name: "🐚 貝感欣慰", desc: "能撿起前後兩格的垃圾(限吸管)每一垃圾可變成兩積分，淨化過的垃圾即作廢" }, { id: "pleco", name: "🐟 垃圾清道夫", desc: "若是遇到3分以下的垃圾，可將垃圾變為1HP，垃圾作廢" }
 ];
-const eventPool = [
-    { id: "evt_whale", name: "擱淺鯨魚", desc: "猜拳決定積分" }, { id: "evt_straw", name: "海龜吸管", desc: "自己得分對手走" },
-    { id: "evt_oil", name: "海底漏油", desc: "扣HP且限步" }, { id: "evt_net", name: "纏繞漁網", desc: "隨機對手被困" },
-    { id: "evt_sonar", name: "聲納干擾", desc: "下輪限步 1 步" }, { id: "evt_earthquake", name: "海牛翻身", desc: "位置大風吹" },
-    { id: "evt_turtles", name: "30萬海龜", desc: "失去 3 個積分" }
+const chancePool = [//機會都是好的
+    {id: "chc_sonar", name: "聲納增強", desc: "聲納效果提升！本回合內，擲骰子後可額外移動 1 格。"},
+    {id: "chc_tide", name: "潮汐之力", desc: "潮水幫助你！立刻向前推進 2 格。"},
+    {id: "chc_gale", name: "海風加持", desc: "順風而行！本回合內，移動時可選擇多一個方向。"},
+    {id: "chc_lucky", name: "幸運之神眷顧", desc: "幸運女神微笑了！立刻抽一張技能卡並加入手牌。"},
+    {id: "chc_treasure", name: "沉船寶藏", desc: "發現沉船寶藏！獲得 3 分垃圾積分。"},
+    {id: "chc_current", name: "洋流推動", desc: "洋流幫助你前進！立刻向前推進 1 格，並且下一次移動額外增加 1 格。"}
 ];
+const destinyPool=[
+    {id: "dst_flow", name: "寄生暗流", desc: "乘浪前行！立刻向前推進 3 格。"},
+    {id: "dst_fall", name: "掉下去了/沒在看路", desc: "前進困難！下一回合不論擲出幾點，都只能固定移動 1 格。"},
+    {id: "dst_caught", name: "抓到你了", desc: "寸步難行！場上積分最高的人會被困在原地，直到下回合開始。"}, 
+    {id: "dst_lost", name: "我在哪裡", desc: "所有人迷失方向持續2回合，玩家丟骰子的移動方向由對方陣營決定。"},
+    {id: "dst_turtles", name: "碰到30萬海龜！", desc: "移抽到此牌的玩家需放棄3個垃圾積分"},
+    {id: "dst_earthquake", name: "海牛翻身啦！", desc: "海底湧浪大翻轉！全體玩家依照當前「回合輪流順序」，將棋子移動至下一位玩家所在的格子上"},
+    {id: "dst_blessing", name: "微光祝福", desc: "狀態回穩！立刻恢復 1 點生命值。"},
+    {id: "dst_unblock", name: "鼻塞危機解除", desc: "對方陣營的玩家前進1格，自己陣營獲得1積分。"},
+    {id: "dst_pebble", name: "海洋鵝卵石步道", desc: "長痛不如短痛！立刻扣除 1 點生命值，棋子立刻向前衝刺 3 格。"}
+]
 
 let currentTurnPlayer = 0; let selectedCardIndex = null; let globalMaxSteps = 3; let globalSonarEffect = 0; let pendingJudgePlayer = null;
-let remainingSteps = 0; let gameEnded = false;
+let remainingSteps = 0; let gameEnded = false; 
 
 // 防禦攔截專用暫存暫態
 let currentAttackContext = null;
@@ -314,7 +328,7 @@ let activePlayers = []; const teams = [{ score: 0 }, { score: 0 }, { score: 0 }]
 const mapConfig = [
     // --- 🟥 左上 (quad: 1) ---
     { id: 101, quad: 1, x: 4, y: 1, name: "R", type: "start-team0", next: [103] },
-    { id: 102, quad: 1, x: 3, y: 2, name: " ", type: "ocean", next: [104] },
+    { id: 102, quad: 1, x: 3, y: 2, name: " ", type: "ocean", next: [104, 103] },
     { id: 103, quad: 1, x: 4, y: 2, name: " ", type: "ocean", next: [102, 105] },
     { id: 104, quad: 1, x: 2, y: 3, name: " ", type: "ocean", next: [107, 102] },
     { id: 105, quad: 1, x: 5, y: 3, name: " ", type: "ocean", next: [109, 103] },
@@ -345,7 +359,7 @@ const mapConfig = [
     { id: 213, quad: 2, x: 7, y: 4, name: " ", type: "ocean", next: [212] },
     // --- 🟩 左下 (quad: 3) ---
     { id: 301, quad: 3, x: 4, y: 7, name: "G", type: "start-team2", next: [302] },
-    { id: 302, quad: 3, x: 4, y: 6, name: " ", type: "ocean", next: [303] },
+    { id: 302, quad: 3, x: 4, y: 6, name: " ", type: "ocean", next: [303, 301] },
     { id: 303, quad: 3, x: 4, y: 5, name: " ", type: "ocean", next: [304, 302] },
     { id: 304, quad: 3, x: 5, y: 4, name: " ", type: "ocean", next: [305, 303, 307] },
     { id: 305, quad: 3, x: 6, y: 4, name: " ", type: "ocean", next: [306, 304] },
@@ -355,13 +369,13 @@ const mapConfig = [
     { id: 309, quad: 3, x: 4, y: 2, name: " ", type: "ocean", next: [307, 311, 310] },
     { id: 310, quad: 3, x: 4, y: 1, name: " ", type: "ocean", next: [309, 115] },
     { id: 311, quad: 3, x: 3, y: 2, name: " ", type: "ocean", next: [309, 312] },
-    { id: 312, quad: 3, x: 2, y: 3, name: " ", type: "ocean", next: [313] },
+    { id: 312, quad: 3, x: 2, y: 3, name: " ", type: "ocean", next: [313, 311] },
     { id: 313, quad: 3, x: 1, y: 4, name: " ", type: "ocean", next: [312] },
     { id: 314, quad: 3, x: 7, y: 1, name: "G", type: "station station-t2", next: [308] },
     // --- 🟦 右下 (quad: 4) ---
     { id: 401, quad: 4, x: 4, y: 7, name: "B", type: "start-team1", next: [402] },
-    { id: 402, quad: 4, x: 4, y: 6, name: " ", type: "ocean", next: [403] },
-    { id: 403, quad: 4, x: 4, y: 5, name: " ", type: "ocean", next: [404] },
+    { id: 402, quad: 4, x: 4, y: 6, name: " ", type: "ocean", next: [403, 401] },
+    { id: 403, quad: 4, x: 4, y: 5, name: " ", type: "ocean", next: [404, 402] },
     { id: 404, quad: 4, x: 3, y: 4, name: " ", type: "ocean", next: [405, 408] },
     { id: 405, quad: 4, x: 3, y: 3, name: " ", type: "ocean", next: [404, 411, 415] },
     { id: 406, quad: 4, x: 5, y: 3, name: " ", type: "ocean", next: [415, 409] },
@@ -377,6 +391,19 @@ const mapConfig = [
 ];
 
 function showMsg(m, cb) { if(m) setTimeout(() => { alert(m); if(cb) cb(); }, 100); }
+
+const totalGarbageWeight = garbageTypes.reduce((sum, g) => sum + g.weight, 0);
+
+function getRandomGarbageByWeight() {
+    let rand = Math.random() * totalGarbageWeight;
+    for (let i = 0; i < garbageTypes.length; i++) {
+        if (rand < garbageTypes[i].weight) {
+            return { ...garbageTypes[i] };
+        }
+        rand -= garbageTypes[i].weight;
+    }
+    return { ...garbageTypes[garbageTypes.length - 1] };
+}
 
 function selectPlayerCount(count) {
     let selectedPlayers = [];
@@ -412,7 +439,8 @@ function initMapData() {
         if (cell.type === "ocean") {
             let rand = Math.random();
             if (rand < 0.12) { cell.type = "event-cell"; cell.name = "!"; }
-            else if (rand < 0.65) { cell.garbage = { ...garbageTypes[Math.floor(Math.random() * garbageTypes.length)] }; }
+            else if (rand < 0.24) { cell.type = "destiny-cell"; cell.name = "?"; }
+            else if (rand < 0.95) { cell.garbage = { ...getRandomGarbageByWeight() }; }
         }
     });
 }
@@ -516,18 +544,53 @@ function checkGrid(player) {
             showMsg(`🎉 成功抵達本隊專屬回收站！回收成功，獲得 ${sc} 分！`);
         } else { showMsg(`⚠️ 這是其他隊伍的回收站！${player.name} 無法在此回收垃圾。`); }
     }
-    if(c.type === "event-cell" || c.name === "!") {
-        const e = eventPool[Math.floor(Math.random()*eventPool.length)];
-        if(e.id === "evt_whale") { pendingJudgePlayer = player; document.getElementById("judge-box").style.display = "block"; } 
-        else {
-            showMsg(`!事件：${e.name}\n${e.desc}`);
-            if(e.id === "evt_straw") { teams[player.team].score += 1; }
-            else if(e.id === "evt_oil") { activePlayers.forEach(pl => pl.hp = Math.max(0, pl.hp - 1)); globalMaxSteps = 2; }
-            else if(e.id === "evt_net") { let target = activePlayers[Math.floor(Math.random()*activePlayers.length)]; if(target.id!==player.id) target.trap = true; }
-            else if(e.id === "evt_sonar") { globalSonarEffect = 2; }
-            else if(e.id === "evt_earthquake") { player.position = mapConfig[Math.floor(Math.random()*mapConfig.length)].id; }
-            else if(e.id === "evt_turtles") { teams[player.team].score = Math.max(0, teams[player.team].score - 3); }
+    if(c.type === "chance-cell" || c.name === "!") {
+        const ch = chancePool[Math.floor(Math.random()*chancePool.length)];
+        showMsg(`!機會：${ch.name}\n${ch.desc}`);
+        if(ch.id === "chc_sonar") { globalSonarEffect = 1; }
+        else if(ch.id === "chc_tide") { processPlayerMovement(player, 2); }
+        else if(ch.id === "chc_gale") { globalMaxSteps = 4; }
+        else if(ch.id === "chc_lucky") { player.hand.push(cardPool[Math.floor(Math.random() * cardPool.length)]); renderHand(); }
+        else if(ch.id === "chc_treasure") { teams[player.team].score += 3; updateUI(); }
+        else if(ch.id === "chc_current") { processPlayerMovement(player, 1); globalMaxSteps = 4; }
+    }
+    if(c.type === "destiny-cell" || c.name === "?") {
+        const d = destinyPool[Math.floor(Math.random()*destinyPool.length)];
+        showMsg(`?命運：${d.name}\n${d.desc}`);
+        if(d.id === "dst_flow") { processPlayerMovement(player, 3); }
+        else if(d.id === "dst_fall") { globalMaxSteps = 1; }
+        else if(d.id === "dst_caught") { 
+            let maxScore = Math.max(...teams.map(t => t.score));
+            activePlayers.forEach(p => { if(teams[p.team].score === maxScore) p.trap = true; });
         }
+        else if(d.id === "dst_lost") { 
+            let currentIndex = currentTurnPlayer;
+            activePlayers.forEach(p => {
+                if(p.id !== player.id) {
+                    p.position = activePlayers[currentIndex].position;
+                    currentIndex = (currentIndex + 1) % activePlayers.length;
+                }
+            });
+            updateUI();
+        }
+        else if(d.id === "dst_turtles") { teams[player.team].score = Math.max(0, teams[player.team].score - 3); }
+        else if(d.id === "dst_earthquake") {
+            let currentIndex = currentTurnPlayer;
+            activePlayers.forEach(p => {
+                if(p.id !== player.id) {
+                    p.position = activePlayers[currentIndex].position;
+                    currentIndex = (currentIndex + 1) % activePlayers.length;
+                }
+            });
+            updateUI();
+        }
+        else if(d.id === "dst_blessing") { player.hp = Math.min(5, player.hp + 1); }
+        else if(d.id === "dst_unblock") { 
+            activePlayers.forEach(p => { if(p.team !== player.team) p.position = mapConfig.find(c => c.type.includes(`station-t${p.team}`)).id; });
+            teams[player.team].score += 1;
+            updateUI();
+        }
+        else if(d.id === "dst_pebble") { player.hp = Math.max(0, player.hp - 1); processPlayerMovement(player, 3); }
     }
 }
 
@@ -631,6 +694,7 @@ function playCard() {
     
     if(c.id === "shrimp") {
         const availableIds = activePlayers.map(pl => pl.id).join(", ");
+        processPlayerMovement(p, 2);// 先移動再攻擊，增加戰術深度
         showMsg(`使用了 🦐 爆炸蝦！\n在場玩家 ID：(${availableIds})`, () => {
             const targetId = prompt(`請輸入要攻擊的玩家ID`);
             const target = activePlayers.find(pl => pl.id === parseInt(targetId));
