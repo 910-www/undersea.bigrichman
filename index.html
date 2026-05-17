@@ -8,12 +8,12 @@
 :root {
     --bg-gradient: radial-gradient(circle at center, #2c3155 0%, #313251 100%);
     --text-main: #f8fafc;
-    --text-muted: #94a3b8;
+    --text-muted: #414141;
     --accent-red: #c00c2d; 
-    --accent-blue: #1a3259; 
+    --accent-blue: #235098; 
     --accent-green: #13714e; 
     --glass-bg: rgba(255, 255, 255, 0.04);
-    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-border: rgba(173, 173, 173, 0.08);
     --accent-gold: #fbcfe8;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; touch-action: manipulation; -webkit-user-select: none; user-select: none; }
@@ -22,36 +22,37 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang TC", sans-serif;
     background: var(--bg-gradient); 
     color: var(--text-main); 
-    padding: 12px; 
+    padding: 8px; 
     display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
     height: 100vh; overflow: hidden;
 }
 
-#game-container { width: 100%; max-width: 460px; display: flex; flex-direction: column; gap: 12px; height: 100%; justify-content: flex-start; }
+/* 讓主容器高度吃滿，並用 flex 均分空間 */
+#game-container { width: 100%; max-width: 460px; display: flex; flex-direction: column; gap: 8px; height: 100%; justify-content: space-between; }
 
-/* 頂部狀態：極簡現代極光玻璃面板 */
+/* 頂部狀態優化：縮小內距釋放空間 */
 .top-status-bar {
     width: 100%; background: rgba(255, 255, 255, 0.96); color: var(--text-main);
     display: flex; flex-direction: column; padding: 6px 8px; 
     border-radius: 10px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); gap: 4px;
-    z-index: 100;
+    z-index: 100; flex-shrink: 0;
 }
 .status-row-top { display: flex; justify-content: space-between; align-items: center; }
-.center-turn { font-size: 13px; font-weight: 600; background: rgba(255,255,255,0.1); color: #727272; padding: 4px 12px; border-radius: 20px; letter-spacing: 0.5px; }
+.center-turn { font-size: 13px; font-weight: 600; background: rgba(255,255,255,0.1); color: #727272; padding: 2px 10px; border-radius: 20px; letter-spacing: 0.5px; }
 #dice-result { font-weight: 500; color: var(--accent-blue); font-size: 14px; letter-spacing: 0.5px; }
 
 #choice-overlay { 
-    display: none; text-align: center; padding: 6px; 
+    display: none; text-align: center; padding: 4px; 
     background: rgba(56, 189, 248, 0.1); 
-    color: #cbd5e1; font-size: 12px;
-    border-radius: 8px; border: 1px solid rgba(56, 189, 248, 0.2);
+    color: #cbd5e1; font-size: 11px;
+    border-radius: 6px; border: 1px solid rgba(56, 189, 248, 0.2);
 }
 
-.center-scores { display: flex; justify-content: space-around; width: 100%; background: rgba(0, 0, 0, 0.15); padding: 6px; border-radius: 8px; }
-.score-item { text-align: center; flex: 1; font-weight: 500; font-size: 12px; }
-.center-hp { font-size: 11px; color: var(--text-muted); display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; text-align: center; }
+.center-scores { display: flex; justify-content: space-around; width: 100%; background: rgba(0, 0, 0, 0.15); padding: 4px; border-radius: 6px; }
+.score-item { text-align: center; flex: 1; font-weight: 500; font-size: 11px; }
+.center-hp { font-size: 11px; color: var(--text-muted); display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; text-align: center; }
 
-/* 棋盤容器：純淨、低干擾的深海微光感 */
+/* 棋盤容器優化：移除原本過大的 margin-bottom，改用 flex 彈性縮放 */
 .board-container {
     width: 100%;
     aspect-ratio: 1 / 1;
@@ -59,11 +60,12 @@ body {
     border-radius: 20px;
     border: 1px solid var(--glass-border);
     position: relative;
-    margin-bottom: 95px;
+    flex-grow: 1;
+    max-height: 60vh; /* 限制最大高度，防止擠壓下方按鈕 */
     overflow: hidden;
 }
 
-/* 棋盤格子：純白極簡微光小圓點 */
+/* 棋盤格子 */
 .cell { 
     position: absolute;
     width: 26px; height: 26px;
@@ -77,7 +79,6 @@ body {
     z-index: 10;
 }
 
-/* 各陣營專屬站點：有感而不刺眼的淡雅色彩 */
 .cell.start-team0 { background: #fee2e2; border-color: var(--accent-red); }
 .cell.station-t0 { background: var(--accent-red); border: none; font-size: 9px; font-weight: bold; color: #000; }
 .cell.station-t1 { background: var(--accent-blue); border: none; font-size: 9px; font-weight: bold; color: #000; }
@@ -85,7 +86,6 @@ body {
 .cell.event-cell { background: rgba(0, 0, 0, 0.25); border: 1px dashed rgba(255, 255, 255, 0.6); font-weight: bold; color: #fff; }
 .cell.destiny-cell { background: rgba(0, 0, 0, 0.25); border: 1px dashed rgba(255, 255, 255, 0.6); font-weight: bold; color: #fff; }
 
-/* 乾淨柔和的路線提示（淡藍色呼吸微光） */
 .cell.path-highlight {
     animation: cleanPulse 0.6s infinite alternate;
     z-index: 99;
@@ -104,13 +104,12 @@ body {
 }
 
 .cell-node-title { font-size: 9px; position: absolute; top: -14px; white-space: nowrap; color: var(--text-muted); }
-.cell.station-t0 .cell-node-title, .cell.station-t1 .cell-node-title, .cell.station-t2 .cell-node-title { color: #000; top: 50%; transform: translate(-50%, -50%); left: 50%; }
+.cell.station-t0 .cell-node-title, .cell.station-t1 .cell-node-title, .cell.station-t2 .cell-node-title { color: #4f4f4f; top: 50%; transform: translate(-50%, -50%); left: 50%; }
 .cell-info { font-size: 12px; }
 
-/* 棋子外觀優化 */
 .player-container { 
     position: absolute; display: flex; gap: 2px; flex-wrap: wrap; justify-content: center; align-items: center;
-    width: 36px; z-index: 20; transform: translate(-50%, calc(-50% - 22px)); transition: all 0.2s ease;
+    width: 36px; z-index: 20; transform: translate(-50%, calc(30% - 22px)); transition: all 0.2s ease;
 }
 .player-token { 
     width: 14px; height: 14px; border-radius: 50%; 
@@ -128,29 +127,26 @@ body {
     opacity: 0.5;
 }
 
-/* 底部控制區域：洗練黑灰色調 */
+/* 底部控制區域：取消 fixed 固定定位，改用相對定位順著排列，防止重疊 */
 .controls { 
     width: 100%; 
-    max-width: 480px;
     background: rgba(30, 41, 59, 0.98); 
     border-top: 2px solid #334155;
     padding: 8px; 
     border-radius: 16px 16px 0 0; 
     box-shadow: 0 -4px 20px rgba(0,0,0,0.5);
-    position: fixed;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
+    position: relative;
     z-index: 4000;
     display: flex;
     flex-direction: column;
     gap: 6px;
-    padding-bottom: calc(8px + env(safe-area-inset-bottom)); /* 支援 iPhone 底部海苔條留白 */
+    flex-shrink: 0;
+    padding-bottom: calc(8px + env(safe-area-inset-bottom)); 
 }
 
 .action-row { display: flex; gap: 8px; }
 .action-row button { 
-    flex: 1; height: 40px; font-size: 13px; font-weight: 500; cursor: pointer; 
+    flex: 1; height: 38px; font-size: 13px; font-weight: 500; cursor: pointer; 
     background: rgba(255,255,255,0.08); color: var(--text-main); border: 1px solid var(--glass-border); border-radius: 10px; 
     transition: all 0.15s ease;
 }
@@ -165,7 +161,7 @@ body {
 .hand-container::-webkit-scrollbar { display: none; }
 
 .card-option { 
-    min-width: 90px; max-width: 90px; height: 34px; 
+    min-width: 85px; max-width: 85px; height: 32px; 
     border: 1px solid var(--glass-border); border-radius: 8px; 
     background: rgba(255, 222, 222, 0.03); color: var(--text-main); 
     display: flex; align-items: center; justify-content: center; 
@@ -177,16 +173,15 @@ body {
     transform: translateY(-2px);
 }
 
-/* 抽屜面板 */
+/* 抽屜面板高度調整，避免擋住地圖 */
 #desc-drawer {
-    position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(180%); 
-    width: 100%; max-width: 430px; background: #ffffff; color: #fff;
-    padding: 12px 16px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    position: fixed; bottom: 120px; left: 50%; transform: translateX(-50%) translateY(180%); 
+    width: 90%; max-width: 430px; background: #ffffff; color: #334155;
+    padding: 10px 14px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
     transition: transform 0.2s ease; z-index: 3990; font-size: 13px; border: 1px solid var(--glass-border);
 }
 #desc-drawer.expanded { transform: translateX(-50%) translateY(0); }
 
-/* 彈窗部分極簡化 */
 #defense-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 4800; }
 #defense-box { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1e293b; width: 85%; max-width: 340px; padding: 20px; border-radius: 14px; text-align: center; z-index: 4900; border: 1px solid var(--glass-border); }
 .defense-btn-row { display: flex; flex-direction: column; gap: 8px; margin-top: 15px; }
@@ -255,7 +250,7 @@ body {
 </div>
 
 <script>
-// 核心遊戲邏輯保持100%原樣未動，確保機制運作完美
+// 核心遊戲邏輯 100% 保持不變，確保運作完美
 const rawCoordinates = [
     [1,7],[3.5,5.5],[5.8,3],[8,1],[10.8,2],[9.2,5],[11.2,7.5],[14.3,8],[5,8],[5,10.5],[7.5,12],
     [17,7],[19,5],[21.5,4],[23,1],[24,5.5],[26.5,4.5],[28,7],[27,10],[24,10],[22.5,12],
@@ -465,7 +460,7 @@ function rollDice() {
     if (p.trap) { showMsg(`${p.name} 順利脫困！本回合無法移動。`); p.trap = false; endMovePhase(); return; }
     let m = globalSonarEffect > 0 ? 1 : globalMaxSteps;
     const dice = Math.floor(Math.random() * m) + 1;
-    document.getElementById("dice-result").innerText = `🎲 推進速度: ${dice} 節`;
+    document.getElementById("dice-result").innerText = `🎲 : ${dice} 步`;
     document.getElementById("roll-btn").disabled = true;
     remainingSteps = dice;
     onPathSelectionComplete = () => { checkGrid(p); endMovePhase(); };
