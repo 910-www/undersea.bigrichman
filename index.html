@@ -3,58 +3,69 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>Undersea Big Rich Man</title>
+<title>Undersea Big Rich Man </title>
 <style>
 :root {
-    --bg-color: #2c2c2c; --text-main: #333333;
-    --accent-red: #a63d40; --accent-blue: #2b5c8f; --accent-green: #386641; 
+    --bg-color: #1a1e29; --text-main: #333333;
+    --accent-red: #e63946; --accent-blue: #457b9d; --accent-green: #2a9d8f; 
 }
-* { box-sizing: border-box; margin: 0; padding: 0; touch-action: manipulation; -webkit-user-select: none; user-select: none; }
+* { 
+    box-sizing: border-box; margin: 0; padding: 0; 
+    touch-action: manipulation; 
+    -webkit-user-select: none; user-select: none; 
+    -webkit-tap-highlight-color: transparent; /* 移除手機點擊時的醜陋高亮框 */
+}
 body { 
-    font-family: -apple-system, "PingFang TC", sans-serif; 
-    background-color: var(--bg-color); color: var(--text-main); 
-    padding: 8px 6px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
-    height: 100vh; overflow: hidden;
+    font-family: -apple-system, "PingFang TC", "Microsoft JhengHei", sans-serif; 
+    background-color: var(--bg-color); color: #ffffff; 
+    padding: 6px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+    height: 100vh; height: -webkit-fill-available; overflow: hidden;
 }
 
 #game-container { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 6px; height: 100%; justify-content: flex-start; position: relative; }
 
 /* 頂部精簡資訊欄 */
 .top-status-bar {
-    width: 100%; background: rgba(255, 255, 255, 0.96); 
+    width: 100%; background: rgba(255, 255, 255, 0.96); color: var(--text-main);
     display: flex; flex-direction: column; padding: 6px 8px; 
-    border-radius: 8px; box-shadow: 0 3px 10px rgba(255, 255, 255, 0.3); gap: 4px;
+    border-radius: 10px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); gap: 4px;
     z-index: 100;
 }
 .status-row-top { display: flex; justify-content: space-between; align-items: center; }
-.center-turn { font-size: 13px; font-weight: 900; background: #929292; color: #fff; padding: 2px 8px; border-radius: 4px; }
-#dice-result { font-weight: bold; color: var(--accent-red); font-size: 13px; }
+.center-turn { font-size: 13px; font-weight: 900; background: #4a5568; color: #fff; padding: 3px 10px; border-radius: 20px; }
+#dice-result { font-weight: bold; color: var(--accent-red); font-size: 14px; }
 
-#choice-overlay { display: none; text-align: center; padding: 4px; background: #fff3cd; color: #856404; font-size: 11px; font-weight: bold; border-radius: 4px; animation: flash 0.8s infinite alternate; }
-@keyframes flash { from { opacity: 0.6; } to { opacity: 1; } }
+#choice-overlay { 
+    display: none; text-align: center; padding: 6px; 
+    background: #fff3cd; color: #856404; font-size: 12px; font-weight: bold; 
+    border-radius: 6px; border: 1px solid #ffeeba;
+    animation: flash 0.8s infinite alternate; 
+}
+@keyframes flash { from { opacity: 0.7; } to { opacity: 1; } }
 
-.center-scores { display: flex; justify-content: space-around; width: 100%; background: #e9e9e9; padding: 3px; border-radius: 5px; }
+.center-scores { display: flex; justify-content: space-around; width: 100%; background: #edf2f7; padding: 4px; border-radius: 6px; }
 .score-item { text-align: center; flex: 1; font-weight: bold; font-size: 12px; }
-.center-hp { font-size: 11px; color: #333; background: #fafaf8; padding: 4px; border-radius: 4px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2px; text-align: center; font-weight: bold; }
+.center-hp { font-size: 11px; color: #333; background: #fafaf8; padding: 4px; border-radius: 4px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2px; text-align: center; font-weight: bold; border: 1px solid #e2e8f0; }
 
-/* 地圖區 */
+/* 地圖區自適應螢幕 */
 .board-container {
     width: 100%;
     aspect-ratio: 1 / 1;
-    background: #1e293b;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    background: #0f172a;
+    border-radius: 12px;
+    border: 2px solid #334155;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
     position: relative;
-    margin-bottom: 95px;
+    margin-bottom: 105px; /* 留給下方操作面板的空間 */
     overflow: hidden;
 }
 
-/* 節點樣式 */
+/* 節點樣式 - 加大觸控半徑 */
 .cell { 
     position: absolute;
-    width: 35px; height: 35px;
+    width: 36px; height: 36px;
     background: #ffffff; 
-    border: 1.5px solid #cbd5e1;
+    border: 2px solid #cbd5e1;
     border-radius: 50%; 
     display: flex; 
     justify-content: center; 
@@ -64,16 +75,20 @@ body {
     transition: all 0.2s;
     z-index: 10;
 }
+/* 加大節點對手機觸控的感應面積，防止手太粗按不到 */
+.cell::after {
+    content: ''; position: absolute; top: -6px; left: -6px; right: -6px; bottom: -6px; border-radius: 50%;
+}
 
 /* 隊伍配色與回收站 */
-.cell.start-team0 { background: #fee2e2; border: 2px solid var(--accent-red); }
-.cell.station-t0 { background: #fca5a5; border: 2px solid var(--accent-red); font-size: 9px; font-weight: bold; color: #fff;}
-.cell.station-t1 { background: #93c5fd; border: 2px solid var(--accent-blue); font-size: 9px; font-weight: bold; color: #fff;}
-.cell.station-t2 { background: #86efac; border: 2px solid var(--accent-green); font-size: 9px; font-weight: bold; color: #fff;}
-.cell.event-cell { background: #ddd6fe; border: 1.5px dashed #8b5cf6; font-weight: bold; color: #6d28d9; }
-.cell.destiny-cell { background: #fef08a; border: 1.5px dashed #ca8a04; font-weight: bold; color: #a16207; }
+.cell.start-team0 { background: #fee2e2; border: 2.5px solid var(--accent-red); }
+.cell.station-t0 { background: var(--accent-red); border: 2px solid #fff; font-size: 9px; font-weight: bold; color: #fff;}
+.cell.station-t1 { background: var(--accent-blue); border: 2px solid #fff; font-size: 9px; font-weight: bold; color: #fff;}
+.cell.station-t2 { background: var(--accent-green); border: 2px solid #fff; font-size: 9px; font-weight: bold; color: #fff;}
+.cell.event-cell { background: #e0e7ff; border: 2px dashed #6366f1; font-weight: bold; color: #4338ca; }
+.cell.destiny-cell { background: #fef9c3; border: 2px dashed #eab308; font-weight: bold; color: #854d0e; }
 
-.cell-info { font-size: 13px; line-height: 1; }
+.cell-info { font-size: 14px; line-height: 1; }
 
 /* 棋子渲染區 */
 .player-container { 
@@ -83,30 +98,44 @@ body {
     flex-wrap: wrap; 
     justify-content: center; 
     align-items: center;
-    width: 40px;
+    width: 44px;
     z-index: 20;
-    transform: translate(-50%, calc(-50% - 18px));
+    transform: translate(-50%, calc(-50% - 20px));
+    pointer-events: none; /* 讓點擊穿透到棋子本身 */
 }
+/* 手機版大幅放大棋子，方便點擊進行攻擊 */
 .player-token { 
-    width: 12px; height: 12px; border-radius: 50%; 
-    color: #fff; font-size: 7px; display: flex; 
+    width: 16px; height: 16px; border-radius: 50%; 
+    color: #fff; font-size: 9px; display: flex; 
     align-items: center; justify-content: center; 
-    font-weight: bold; border: 0.5px solid #fff; 
-    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    font-weight: bold; border: 1px solid #fff; 
+    box-shadow: 0 2px 5px rgba(0,0,0,0.4);
     cursor: pointer; transition: all 0.2s;
+    pointer-events: auto;
 }
+/* 手機版攻擊目標閃爍提示 */
+@keyframes target-blink {
+    from { transform: scale(1); box-shadow: 0 0 4px #ef4444; }
+    to { transform: scale(1.3); box-shadow: 0 0 16px #ef4444; }
+}
+.player-token.attack-target-blink {
+    animation: target-blink 0.5s infinite alternate;
+    z-index: 999;
+}
+
 .t0-token { background: var(--accent-red); }
 .t1-token { background: var(--accent-blue); }
 .t2-token { background: var(--accent-green); }
 
-/* 下方固定控制區 */
+/* 下方固定手機操控面板 */
 .controls { 
     width: 100%; 
     max-width: 480px;
-    background: rgba(34, 34, 34, 0.95); 
-    padding: 6px; 
-    border-radius: 12px 12px 0 0; 
-    box-shadow: 0 -3px 15px rgba(0,0,0,0.4);
+    background: rgba(30, 41, 59, 0.98); 
+    border-top: 2px solid #334155;
+    padding: 8px; 
+    border-radius: 16px 16px 0 0; 
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.5);
     position: fixed;
     bottom: 0;
     left: 50%;
@@ -115,60 +144,72 @@ body {
     display: flex;
     flex-direction: column;
     gap: 6px;
+    padding-bottom: calc(8px + env(safe-area-inset-bottom)); /* 支援 iPhone 底部海苔條留白 */
 }
 
-.action-row { display: flex; gap: 4px; }
-.action-row button { flex: 1; height: 38px; font-size: 12px; font-weight: bold; cursor: pointer; background: #ffffff; color: #222; border: none; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-.action-row button:active { background: #ddd; }
-.action-row button:disabled { background: #555; color: #888; box-shadow: none; pointer-events: none; }
+.action-row { display: flex; gap: 6px; }
+.action-row button { 
+    flex: 1; height: 42px; font-size: 13px; font-weight: bold; 
+    cursor: pointer; background: #ffffff; color: #1e293b; 
+    border: none; border-radius: 8px; 
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3); 
+}
+.action-row button:active { background: #cbd5e1; }
+.action-row button:disabled { background: #475569; color: #94a3b8; box-shadow: none; pointer-events: none; }
 #roll-btn { background: #f59e0b; color: white; }
-#discard-btn { background: #6b7280; color: white; }
+#discard-btn { background: #64748b; color: white; }
 
+/* 手機版卡牌滑動槽 */
 .hand-container { 
     display: flex; 
-    gap: 6px; 
+    gap: 8px; 
     overflow-x: auto; 
-    padding: 2px 0; 
+    padding: 4px 2px; 
     -webkit-overflow-scrolling: touch; 
 }
 .hand-container::-webkit-scrollbar { display: none; }
 
 .card-option { 
-    min-width: 85px; max-width: 85px; height: 32px; 
-    border: 1px solid #555; border-radius: 6px; 
-    background: #2a2a2a; color: #fff; 
+    min-width: 90px; max-width: 90px; height: 36px; 
+    border: 1px solid #475569; border-radius: 8px; 
+    background: #334155; color: #fff; 
     display: flex; align-items: center; justify-content: center; 
-    text-align: center; font-size: 11px; font-weight: bold; white-space: nowrap;
+    text-align: center; font-size: 12px; font-weight: bold; white-space: nowrap;
+    box-shadow: inset 0 1px 3px rgba(255,255,255,0.1);
 }
-.card-option.selected { border: 2.5px solid #f59e0b; background: #f59e0b; color: #000; }
+.card-option.selected { border: 2.5px solid #fbbf24; background: #fbbf24; color: #0f172a; }
 
+/* 卡片說明抽屜 */
 #desc-drawer {
-    position: fixed; bottom: 88px; left: 50%;
+    position: fixed; bottom: 105px; left: 50%;
     transform: translateX(-50%) translateY(180%); 
-    width: 94%; max-width: 450px; background: #ffffff; color: #222;
-    padding: 10px 14px; border-radius: 10px; box-shadow: 0 -4px 25px rgba(0,0,0,0.35);
-    transition: transform 0.25s cubic-bezier(0.25, 0.8, 0.25, 1); z-index: 3990; font-size: 13px; border: 2px solid #f59e0b;
+    width: 94%; max-width: 450px; background: #ffffff; color: #1e293b;
+    padding: 12px 16px; border-radius: 12px; box-shadow: 0 -4px 30px rgba(0,0,0,0.5);
+    transition: transform 0.25s cubic-bezier(0.25, 0.8, 0.25, 1); z-index: 3990; font-size: 13px; border: 2px solid #fbbf24;
 }
 #desc-drawer.expanded { transform: translateX(-50%) translateY(0); }
 
-#defense-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 4800; }
-#defense-box { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; width: 85%; max-width: 360px; padding: 20px; border-radius: 12px; border: 3px solid #f59e0b; text-align: center; z-index: 4900; }
-.defense-btn-row { display: flex; flex-direction: column; gap: 8px; margin-top: 15px; }
-.def-btn { color: white; height: 40px; font-weight: bold; border-radius: 6px; border: none; font-size: 13px; }
+/* 彈出防禦視窗 */
+#defense-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 4800; }
+#defense-box { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; width: 88%; max-width: 360px; padding: 20px; border-radius: 16px; border: 3px solid #fbbf24; text-align: center; z-index: 4900; color: #222; }
+.defense-btn-row { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
+.def-btn { color: white; height: 44px; font-weight: bold; border-radius: 8px; border: none; font-size: 14px; }
 
-#setup-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(44,44,44,0.98); z-index:5000; display:flex; flex-direction:column; align-items:center; justify-content:center; color:white; padding:20px; text-align:center; }
-.setup-btn-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; width:100%; max-width:300px; margin-bottom:30px; }
-.setup-btn { background:#444; color:white; height:50px; font-size:16px; border-radius:6px; font-weight:bold; border: none; }
-.setup-btn.ai-btn { background: #b45309; grid-column: span 3; }
+/* 初始大廳 */
+#setup-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:linear-gradient(to bottom, #1e293b, #0f172a); z-index:5000; display:flex; flex-direction:column; align-items:center; justify-content:center; color:white; padding:20px; text-align:center; }
+.setup-btn-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap:12px; width:100%; max-width:320px; margin-bottom:30px; }
+.setup-btn { background:#334155; color:white; height:54px; font-size:16px; border-radius:10px; font-weight:bold; border: 1px solid #475569; box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
+.setup-btn:active { background: #475569; }
+.setup-btn.ai-btn { background: #d97706; border-color: #f59e0b; grid-column: span 3; }
 </style>
 </head>
 <body>
 
 <div id="setup-overlay">
-    <h1 style="font-size:24px; margin-bottom:10px; color:#f59e0b; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">🌊 Undersea Big Rich Man</h1>
-    <p style="font-size:14px; color:#ccc; margin-bottom:25px;">完全固定機制版！請選擇玩家人數：</p>
+    <h1 style="font-size:26px; margin-bottom:10px; color:#fbbf24; text-shadow: 0 2px 8px rgba(0,0,0,0.6);">🌊 Undersea Big Rich Man</h1>
+    <p style="font-size:14px; color:#94a3b8; margin-bottom:25px;">完全固定機制・手機觸控優化版</p>
     <div class="setup-btn-grid">
-        <button class="setup-btn ai-btn" onclick="selectPlayerCount('ai')">單人 vs 電腦對戰</button>
+        <button class="setup-btn ai-btn" onclick="selectPlayerCount('ai')">🤖 單人 vs 電腦對戰</button>
         <button class="setup-btn" onclick="selectPlayerCount(2)">2 人</button>
         <button class="setup-btn" onclick="selectPlayerCount(3)">3 人</button>
         <button class="setup-btn" onclick="selectPlayerCount(4)">4 人</button>
@@ -179,8 +220,8 @@ body {
 
 <div id="defense-overlay">
     <div id="defense-box">
-        <h3 style="color: #c62828; font-size: 16px; margin-bottom: 6px;">⚠️ 遭到技能卡襲擊！</h3>
-        <p id="defense-msg" style="font-size: 13px; color: #333; line-height: 1.4;"></p>
+        <h3 style="color: #ef4444; font-size: 18px; margin-bottom: 6px;">⚠️ 遭到技能卡襲擊！</h3>
+        <p id="defense-msg" style="font-size: 14px; color: #334155; line-height: 1.5;"></p>
         <div class="defense-btn-row" id="defense-choices"></div>
     </div>
 </div>
@@ -203,8 +244,8 @@ body {
     <div class="board-container" id="main-board"></div>
 
     <div id="desc-drawer">
-        <b id="drawer-card-name" style="color: #d97706; font-size: 13px;">卡片名稱</b>
-        <p id="drawer-card-desc" style="margin-top: 4px; line-height: 1.3; color: #444;">卡片效果說明...</p>
+        <b id="drawer-card-name" style="color: #d97706; font-size: 14px;">卡片名稱</b>
+        <p id="drawer-card-desc" style="margin-top: 4px; line-height: 1.4; color: #334155;">卡片效果說明...</p>
     </div>
 
     <div class="controls">
@@ -235,20 +276,20 @@ const fixedGarbageLoop = [
 ];
 
 const cardPool = [
-    { id: "shrimp", name: "🦐 爆炸蝦", desc: "前進 2 格撿起垃圾，並扣指定玩家2HP" }, { id: "shark", name: "🦈 冰凍鯊", desc: "強迫指定玩家將目前手上的垃圾無條件送給自己" },
-    { id: "starfish", name: "⭐ 生命之星", desc: "補 1 HP，若滿血則向前 1 步" }, { id: "whale", name: "🐋 鯨心膽跳", desc: "個人/隊友 HP 補滿" },
+    { id: "shrimp", name: "🦐 爆炸蝦", desc: "前進 2 格可自選方向撿垃圾，並扣指定玩家 2 HP" }, { id: "shark", name: "🦈 冰凍鯊", desc: "強迫指定玩家將目前手上的垃圾無條件送給自己" },
+    { id: "starfish", name: "⭐ 生命之星", desc: "補 1 HP，若滿血則向前 1 步(逢分岔可自選)" }, { id: "whale", name: "🐋 鯨心膽跳", desc: "個人/隊友 HP 補滿" },
     { id: "turtle", name: "🐢 槓龜", desc: "遭攻擊時阻擋並直達回收站(被動防禦卡)" }, { id: "octopus", name: "🐙 章魚墨客", desc: "遭攻擊時阻擋並使對方暫停一回合(被動防禦卡)" },
     { id: "shell", name: "🐚 貝感欣慰", desc: "將前後兩格內的吸管進化為2倍積分" }, { id: "pleco", name: "🐟 垃圾清道夫", desc: "吞噬格子內3分以下垃圾恢復1HP" }
 ];
 const chancePool = [
-    {id: "chc_sonar", name: "聲納增強", desc: "本回合移動完後，下回合可多前進1格。"},
-    {id: "chc_tide", name: "潮汐之力", desc: "立刻向前推進 2 格。"},
+    {id: "chc_sonar", name: "聲納增強", desc: "下回合必能前進 1 格。"},
+    {id: "chc_tide", name: "潮汐之力", desc: "立刻向前推進 2 格（支援自選分岔路）。"},
     {id: "chc_lucky", name: "幸運眷顧", desc: "立刻抽一張技能卡。"},
     {id: "chc_treasure", name: "沉船寶藏", desc: "發現寶藏！獲得 3 分。"}
 ];
 const destinyPool=[
-    {id: "dst_flow", name: "寄生暗流", desc: "立刻向前推進 3 格。"},
-    {id: "dst_fall", name: "沒在看路", desc: "下一回合不論擲出幾點，都只能前進 1 格。"},
+    {id: "dst_flow", name: "寄生暗流", desc: "立刻向前推進 3 格（支援自選分岔路）。"},
+    {id: "dst_fall", name: "沒在看路", desc: "下一回合只能固定前進 1 格。"},
     {id: "dst_caught", name: "抓到你了", desc: "目前最高分隊伍全體原地困住一回合。"}, 
     {id: "dst_blessing", name: "微光祝福", desc: "狀態回穩！立刻恢復 1 點生命值。"},
     {id: "dst_pebble", name: "步道激勵", desc: "扣 1 點生命值，但立刻向前衝刺 3 格。"}
@@ -260,7 +301,7 @@ let remainingSteps = 0; let gameEnded = false; let isAiMode = false;
 let currentAttackContext = null; let activePlayers = []; 
 let isWaitingForPathSelection = false; 
 let isSelectingAttackTarget = false; 
-let onPathSelectionComplete = null; // 💡 預留回呼函式，用來處理卡片移動完後的接續事件
+let onPathSelectionComplete = null; 
 const teams = [{ score: 0 }, { score: 0 }, { score: 0 }]; 
 
 const allPlayersTemplate = [
@@ -274,13 +315,9 @@ const allPlayersTemplate = [
 
 function buildMapFromCoordinates() {
     mapConfig = [];
-    const fixedChanceIdx = [6, 42, 22];
-    const fixedDestinyIdx = [16, 20, 39];
-    const fixedbottleIdx = [8, 21, 23, 28, 37, 43];
-    const fixedbagIdx = [1, 5, 13, 18, 44];
-    const fixedstrawIdx = [10, 11, 29, 36, 38, 24];
-    const fixednetIdx = [2, 15, 40, 31];
-    const fixedtireIdx = [9, 17, 45];
+    const fixedChanceIdx = [6, 42, 22]; const fixedDestinyIdx = [16, 20, 39];
+    const fixedbottleIdx = [8, 21, 23, 28, 37, 43]; const fixedbagIdx = [1, 5, 13, 18, 44];
+    const fixedstrawIdx = [10, 11, 29, 36, 38, 24]; const fixednetIdx = [2, 15, 40, 31]; const fixedtireIdx = [9, 17, 45];
 
     rawCoordinates.forEach((coord, index) => {
         let type = "ocean"; let name = " ";
@@ -323,8 +360,7 @@ function selectPlayerCount(count) {
         let p1 = JSON.parse(JSON.stringify(allPlayersTemplate[0]));
         let p2 = JSON.parse(JSON.stringify(allPlayersTemplate[2]));
         let p3 = JSON.parse(JSON.stringify(allPlayersTemplate[4]));
-        p2.name = "🤖電腦1"; p2.isBot = true;
-        p3.name = "🤖電腦2"; p3.isBot = true;
+        p2.name = "🤖電腦1"; p2.isBot = true; p3.name = "🤖電腦2"; p3.isBot = true;
         selectedPlayers = [p1, p2, p3];
     } else {
         isAiMode = false;
@@ -354,8 +390,7 @@ function initGame() {
 function renderBoard() {
     const board = document.getElementById("main-board"); board.innerHTML = "";
     const xs = mapConfig.map(c => c.rawX); const ys = mapConfig.map(c => c.rawY);
-    const minX = Math.min(...xs), maxX = Math.max(...xs);
-    const minY = Math.min(...ys), maxY = Math.max(...ys);
+    const minX = Math.min(...xs), maxX = Math.max(...xs); const minY = Math.min(...ys), maxY = Math.max(...ys);
 
     mapConfig.forEach(d => {
         const pctX = 5 + ((d.rawX - minX) / (maxX - minX || 1)) * 90;
@@ -376,15 +411,24 @@ function updateUI() {
     activePlayers.forEach(p => {
         const container = document.getElementById(`tokens-${p.position}`);
         if (container) {
-            const t = document.createElement("div"); t.className = `player-token t${p.team}-token`; t.innerText = p.name.replace("🤖", "");
-            t.setAttribute("onclick", `playerTokenClicked(${p.id}, event)`); container.appendChild(t);
+            const t = document.createElement("div"); 
+            t.className = `player-token t${p.team}-token`; 
+            t.innerText = p.name.replace("🤖", "");
+            
+            // 💡 若處於技能釋放狀態，幫其他可選玩家加上高亮閃爍特效
+            if (isSelectingAttackTarget && p.id !== activePlayers[currentTurnPlayer].id) {
+                t.classList.add("attack-target-blink");
+            }
+
+            t.setAttribute("onclick", `playerTokenClicked(${p.id}, event)`); 
+            container.appendChild(t);
         }
     });
     for (let i = 0; i < 3; i++) document.getElementById(`t${i}-score`).innerText = teams[i].score;
-    document.getElementById("p-hp-info").innerHTML = activePlayers.map(p => `<div>${p.name}:${p.hp}HP${p.trap?'🕸️':''}(🎒${p.bag.length}/3)</div>`).join("");
+    document.getElementById("p-hp-info").innerHTML = activePlayers.map(p => `<div>${p.name}:${p.hp}🫀${p.trap?'🕸️':''}(🎒${p.bag.length}/3)</div>`).join("");
     document.getElementById("current-turn").innerText = `${activePlayers[currentTurnPlayer].name} 的回合`;
     if (activePlayers[currentTurnPlayer].isBot) {
-        document.getElementById("hand-cards").innerHTML = "<div style='color:#aaa; font-size:12px; padding:5px;'>🤖 電腦正全速思考中...</div>";
+        document.getElementById("hand-cards").innerHTML = "<div style='color:#94a3b8; font-size:12px; padding:5px; font-weight:bold;'>🤖 電腦正在深度計算中...</div>";
     } else { renderHand(); }
     checkAllGarbageCleared();
 }
@@ -399,7 +443,6 @@ function rollDice() {
     document.getElementById("dice-result").innerText = `🎲 擲出 ${dice} 點`;
     document.getElementById("roll-btn").disabled = true;
     remainingSteps = dice;
-    // 💡 擲骰子移動完成後，正常結束移動階段
     onPathSelectionComplete = () => { checkGrid(p); endMovePhase(); };
     executeStepByStep(p);
 }
@@ -421,11 +464,15 @@ function executeStepByStep(player) {
 
     if (cellData.next.length > 0) {
         isWaitingForPathSelection = true;
-        document.getElementById("choice-overlay").innerText = "🗺️ 請點擊地圖上閃爍黃光的圓圈選擇前進方向！";
+        document.getElementById("choice-overlay").innerText = "🗺️ 手機觸控：請直接點擊地圖上閃爍黃光的圓圈！";
         document.getElementById("choice-overlay").style.display = "block";
         cellData.next.forEach(nextId => {
             let nextCellEl = document.getElementById(`cell-${nextId}`);
-            if (nextCellEl) { nextCellEl.style.boxShadow = "0 0 15px #f59e0b"; nextCellEl.style.borderColor = "#f59e0b"; nextCellEl.style.zIndex = "999"; }
+            if (nextCellEl) { 
+                nextCellEl.style.boxShadow = "0 0 18px #fbbf24"; 
+                nextCellEl.style.borderColor = "#fbbf24"; 
+                nextCellEl.style.zIndex = "999"; 
+            }
         });
     } else { remainingSteps = 0; executeStepByStep(player); }
 }
@@ -446,7 +493,7 @@ function cellClicked(cellId) {
     }
 }
 
-// 💡 玩家棋子點擊事件處理
+// 💡 手機版點擊棋子精準攻擊
 function playerTokenClicked(targetPlayerId, event) {
     if (event) event.stopPropagation();
     if (!isSelectingAttackTarget) return;
@@ -461,7 +508,7 @@ function playerTokenClicked(targetPlayerId, event) {
     document.getElementById("choice-overlay").style.display = "none";
 
     if (card.id === "shrimp") {
-        // 💡 爆炸蝦推進 2 格流程：支援自己選路！
+        // 💡 爆炸蝦發動完：呼叫自選方向選路！
         remainingSteps = 2;
         onPathSelectionComplete = () => {
             checkGrid(p);
@@ -593,13 +640,13 @@ function playCard() {
     const p = activePlayers[currentTurnPlayer]; const c = p.hand[selectedCardIndex];
     if(c.id === "shrimp" || c.id === "shark") {
         isSelectingAttackTarget = true;
-        document.getElementById("choice-overlay").innerText = "🎯 請直接點擊地圖上的「其他玩家棋子」來釋放技能！";
+        document.getElementById("choice-overlay").innerText = "🎯 技能發動：請直接點擊地圖上的「對手棋子」！";
         document.getElementById("choice-overlay").style.display = "block";
+        updateUI(); // 💡 重新渲染以觸發對手棋子的大範圍閃爍外框
     }
     else if(c.id === "starfish") {
         if (p.hp < 5) { p.hp++; showMsg("補血成功！"); p.hand.splice(selectedCardIndex, 1); p.hand.push(cardPool[Math.floor(Math.random()*cardPool.length)]); renderHand(); updateUI(); endTurn(); } 
         else { 
-            // 💡 生命之星滿血時推進 1 格：同樣支援自己選方向！
             remainingSteps = 1;
             onPathSelectionComplete = () => { checkGrid(p); p.hand.splice(selectedCardIndex, 1); p.hand.push(cardPool[Math.floor(Math.random()*cardPool.length)]); renderHand(); updateUI(); endTurn(); };
             showMsg("滿血改為向前 1 步！"); executeStepByStep(p);
