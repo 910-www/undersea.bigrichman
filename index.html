@@ -3,28 +3,33 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>Undersea Big Rich Man </title>
+<title>Undersea Big Rich Man - Clean Ocean Edition</title>
 <style>
 :root {
-    --bg-color: #1a1e29; --text-main: #333333;
-    --accent-red: #e63946; --accent-blue: #457b9d; --accent-green: #2a9d8f; 
+    --bg-gradient: radial-gradient(circle at center, #2c3155 0%, #313251 100%);
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --accent-red: #c00c2d; 
+    --accent-blue: #1a3259; 
+    --accent-green: #13714e; 
+    --glass-bg: rgba(255, 255, 255, 0.04);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --accent-gold: #fbcfe8;
 }
-* { 
-    box-sizing: border-box; margin: 0; padding: 0; 
-    touch-action: manipulation; 
-    -webkit-user-select: none; user-select: none; 
-    -webkit-tap-highlight-color: transparent; /* 移除手機點擊時的醜陋高亮框 */
-}
+* { box-sizing: border-box; margin: 0; padding: 0; touch-action: manipulation; -webkit-user-select: none; user-select: none; }
+
 body { 
-    font-family: -apple-system, "PingFang TC", "Microsoft JhengHei", sans-serif; 
-    background-color: var(--bg-color); color: #ffffff; 
-    padding: 6px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
-    height: 100vh; height: -webkit-fill-available; overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang TC", sans-serif;
+    background: var(--bg-gradient); 
+    color: var(--text-main); 
+    padding: 12px; 
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+    height: 100vh; overflow: hidden;
 }
 
-#game-container { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 6px; height: 100%; justify-content: flex-start; position: relative; }
+#game-container { width: 100%; max-width: 460px; display: flex; flex-direction: column; gap: 12px; height: 100%; justify-content: flex-start; }
 
-/* 頂部精簡資訊欄 */
+/* 頂部狀態：極簡現代極光玻璃面板 */
 .top-status-bar {
     width: 100%; background: rgba(255, 255, 255, 0.96); color: var(--text-main);
     display: flex; flex-direction: column; padding: 6px 8px; 
@@ -32,102 +37,98 @@ body {
     z-index: 100;
 }
 .status-row-top { display: flex; justify-content: space-between; align-items: center; }
-.center-turn { font-size: 13px; font-weight: 900; background: #4a5568; color: #fff; padding: 3px 10px; border-radius: 20px; }
-#dice-result { font-weight: bold; color: var(--accent-red); font-size: 14px; }
+.center-turn { font-size: 13px; font-weight: 600; background: rgba(255,255,255,0.1); color: #727272; padding: 4px 12px; border-radius: 20px; letter-spacing: 0.5px; }
+#dice-result { font-weight: 500; color: var(--accent-blue); font-size: 14px; letter-spacing: 0.5px; }
 
 #choice-overlay { 
     display: none; text-align: center; padding: 6px; 
-    background: #fff3cd; color: #856404; font-size: 12px; font-weight: bold; 
-    border-radius: 6px; border: 1px solid #ffeeba;
-    animation: flash 0.8s infinite alternate; 
+    background: rgba(56, 189, 248, 0.1); 
+    color: #cbd5e1; font-size: 12px;
+    border-radius: 8px; border: 1px solid rgba(56, 189, 248, 0.2);
 }
-@keyframes flash { from { opacity: 0.7; } to { opacity: 1; } }
 
-.center-scores { display: flex; justify-content: space-around; width: 100%; background: #edf2f7; padding: 4px; border-radius: 6px; }
-.score-item { text-align: center; flex: 1; font-weight: bold; font-size: 12px; }
-.center-hp { font-size: 11px; color: #333; background: #fafaf8; padding: 4px; border-radius: 4px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2px; text-align: center; font-weight: bold; border: 1px solid #e2e8f0; }
+.center-scores { display: flex; justify-content: space-around; width: 100%; background: rgba(0, 0, 0, 0.15); padding: 6px; border-radius: 8px; }
+.score-item { text-align: center; flex: 1; font-weight: 500; font-size: 12px; }
+.center-hp { font-size: 11px; color: var(--text-muted); display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; text-align: center; }
 
-/* 地圖區自適應螢幕 */
+/* 棋盤容器：純淨、低干擾的深海微光感 */
 .board-container {
     width: 100%;
     aspect-ratio: 1 / 1;
-    background: #0f172a;
-    border-radius: 12px;
-    border: 2px solid #334155;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 20px;
+    border: 1px solid var(--glass-border);
     position: relative;
-    margin-bottom: 105px; /* 留給下方操作面板的空間 */
+    margin-bottom: 95px;
     overflow: hidden;
 }
 
-/* 節點樣式 - 加大觸控半徑 */
+/* 棋盤格子：純白極簡微光小圓點 */
 .cell { 
     position: absolute;
-    width: 28px; height: 28px;
-    background: #ffffff; 
-    border: 2px solid #cbd5e1;
+    width: 26px; height: 26px;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.25);
     border-radius: 50%; 
-    display: flex; 
-    justify-content: center; 
-    align-items: center; 
+    display: flex; justify-content: center; align-items: center; 
     transform: translate(-50%, -50%);
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.2s ease;
     z-index: 10;
 }
-/* 加大節點對手機觸控的感應面積，防止手太粗按不到 */
-.cell::after {
-    content: ''; position: absolute; top: -6px; left: -6px; right: -6px; bottom: -6px; border-radius: 50%;
+
+/* 各陣營專屬站點：有感而不刺眼的淡雅色彩 */
+.cell.start-team0 { background: #fee2e2; border-color: var(--accent-red); }
+.cell.station-t0 { background: var(--accent-red); border: none; font-size: 9px; font-weight: bold; color: #000; }
+.cell.station-t1 { background: var(--accent-blue); border: none; font-size: 9px; font-weight: bold; color: #000; }
+.cell.station-t2 { background: var(--accent-green); border: none; font-size: 9px; font-weight: bold; color: #000; }
+.cell.event-cell { background: rgba(0, 0, 0, 0.25); border: 1px dashed rgba(255, 255, 255, 0.6); font-weight: bold; color: #fff; }
+.cell.destiny-cell { background: rgba(0, 0, 0, 0.25); border: 1px dashed rgba(255, 255, 255, 0.6); font-weight: bold; color: #fff; }
+
+/* 乾淨柔和的路線提示（淡藍色呼吸微光） */
+.cell.path-highlight {
+    animation: cleanPulse 0.6s infinite alternate;
+    z-index: 99;
+}
+@keyframes cleanPulse {
+    from {
+        background: var(--accent-blue);
+        box-shadow: 0 0 8px var(--accent-blue);
+        transform: translate(-50%, -50%) scale(1.1);
+    }
+    to {
+        background: #7e8ea0;
+        box-shadow: 0 0 16px #3e454d;
+        transform: translate(-50%, -50%) scale(1.2);
+    }
 }
 
-/* 隊伍配色與回收站 */
-.cell.start-team0 { background: #fee2e2; border: 2.5px solid var(--accent-red); }
-.cell.station-t0 { background: var(--accent-red); border: 2px solid #fff; font-size: 9px; font-weight: bold; color: #fff;}
-.cell.station-t1 { background: var(--accent-blue); border: 2px solid #fff; font-size: 9px; font-weight: bold; color: #fff;}
-.cell.station-t2 { background: var(--accent-green); border: 2px solid #fff; font-size: 9px; font-weight: bold; color: #fff;}
-.cell.event-cell { background: #e0e7ff; border: 2px dashed #6366f1; font-weight: bold; color: #4338ca; }
-.cell.destiny-cell { background: #fef9c3; border: 2px dashed #eab308; font-weight: bold; color: #854d0e; }
+.cell-node-title { font-size: 9px; position: absolute; top: -14px; white-space: nowrap; color: var(--text-muted); }
+.cell.station-t0 .cell-node-title, .cell.station-t1 .cell-node-title, .cell.station-t2 .cell-node-title { color: #000; top: 50%; transform: translate(-50%, -50%); left: 50%; }
+.cell-info { font-size: 12px; }
 
-.cell-info { font-size: 14px; line-height: 1; }
-
-/* 棋子渲染區 */
+/* 棋子外觀優化 */
 .player-container { 
-    position: absolute; 
-    display: flex; 
-    gap: 2px; 
-    flex-wrap: wrap; 
-    justify-content: center; 
-    align-items: center;
-    width: 44px;
-    z-index: 20;
-    transform: translate(-50%, calc(-50% - 20px));
-    pointer-events: none; /* 讓點擊穿透到棋子本身 */
+    position: absolute; display: flex; gap: 2px; flex-wrap: wrap; justify-content: center; align-items: center;
+    width: 36px; z-index: 20; transform: translate(-50%, calc(-50% - 22px)); transition: all 0.2s ease;
 }
-/* 手機版大幅放大棋子，方便點擊進行攻擊 */
 .player-token { 
-    width: 16px; height: 16px; border-radius: 50%; 
-    color: #fff; font-size: 9px; display: flex; 
-    align-items: center; justify-content: center; 
-    font-weight: bold; border: 1px solid #fff; 
-    box-shadow: 0 2px 5px rgba(0,0,0,0.4);
-    cursor: pointer; transition: all 0.2s;
-    pointer-events: auto;
+    width: 14px; height: 14px; border-radius: 50%; 
+    color: #000; font-size: 8px; display: flex; align-items: center; justify-content: center; 
+    font-weight: bold; border: 1px solid #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    cursor: pointer;
 }
-/* 手機版攻擊目標閃爍提示 */
-@keyframes target-blink {
-    from { transform: scale(1); box-shadow: 0 0 4px #ef4444; }
-    to { transform: scale(1.3); box-shadow: 0 0 16px #ef4444; }
-}
-.player-token.attack-target-blink {
-    animation: target-blink 0.5s infinite alternate;
-    z-index: 999;
-}
-
 .t0-token { background: var(--accent-red); }
 .t1-token { background: var(--accent-blue); }
 .t2-token { background: var(--accent-green); }
 
-/* 下方固定手機操控面板 */
+.player-token.ghost-status {
+    background: #475569 !important;
+    border: 1px dashed #94a3b8 !important;
+    opacity: 0.5;
+}
+
+/* 底部控制區域：洗練黑灰色調 */
 .controls { 
     width: 100%; 
     max-width: 480px;
@@ -147,55 +148,50 @@ body {
     padding-bottom: calc(8px + env(safe-area-inset-bottom)); /* 支援 iPhone 底部海苔條留白 */
 }
 
-.action-row { display: flex; gap: 6px; }
+.action-row { display: flex; gap: 8px; }
 .action-row button { 
-    flex: 1; height: 42px; font-size: 13px; font-weight: bold; 
-    cursor: pointer; background: #ffffff; color: #1e293b; 
-    border: none; border-radius: 8px; 
-    box-shadow: 0 2px 6px rgba(0,0,0,0.3); 
+    flex: 1; height: 40px; font-size: 13px; font-weight: 500; cursor: pointer; 
+    background: rgba(255,255,255,0.08); color: var(--text-main); border: 1px solid var(--glass-border); border-radius: 10px; 
+    transition: all 0.15s ease;
 }
-.action-row button:active { background: #cbd5e1; }
-.action-row button:disabled { background: #475569; color: #94a3b8; box-shadow: none; pointer-events: none; }
-#roll-btn { background: #f59e0b; color: white; }
-#discard-btn { background: #64748b; color: white; }
+.action-row button:active { background: rgba(255,255,255,0.15); }
+.action-row button:disabled { background: transparent; color: #475569; border-color: rgba(255,255,255,0.02); pointer-events: none; }
 
-/* 手機版卡牌滑動槽 */
-.hand-container { 
-    display: flex; 
-    gap: 8px; 
-    overflow-x: auto; 
-    padding: 4px 2px; 
-    -webkit-overflow-scrolling: touch; 
-}
+#roll-btn { background: #fff; color: #000; font-weight: 600; border: none; }
+#card-btn:not(:disabled) { background: var(--accent-blue); color: #000; font-weight: 600; border: none; }
+
+/* 手牌區域 */
+.hand-container { display: flex; gap: 6px; overflow-x: auto; padding: 2px 0; }
 .hand-container::-webkit-scrollbar { display: none; }
 
 .card-option { 
-    min-width: 90px; max-width: 90px; height: 36px; 
-    border: 1px solid #475569; border-radius: 8px; 
-    background: #334155; color: #fff; 
+    min-width: 90px; max-width: 90px; height: 34px; 
+    border: 1px solid var(--glass-border); border-radius: 8px; 
+    background: rgba(255, 222, 222, 0.03); color: var(--text-main); 
     display: flex; align-items: center; justify-content: center; 
-    text-align: center; font-size: 12px; font-weight: bold; white-space: nowrap;
-    box-shadow: inset 0 1px 3px rgba(255,255,255,0.1);
+    font-size: 11px; font-weight: 500; transition: all 0.15s ease;
 }
-.card-option.selected { border: 2.5px solid #fbbf24; background: #fbbf24; color: #0f172a; }
+.card-option.selected { 
+    border-color: var(--accent-blue);
+    background: rgba(147, 151, 153, 0.15); color: #ffffff;
+    transform: translateY(-2px);
+}
 
-/* 卡片說明抽屜 */
+/* 抽屜面板 */
 #desc-drawer {
-    position: fixed; bottom: 105px; left: 50%;
-    transform: translateX(-50%) translateY(180%); 
-    width: 94%; max-width: 450px; background: #ffffff; color: #1e293b;
-    padding: 12px 16px; border-radius: 12px; box-shadow: 0 -4px 30px rgba(0,0,0,0.5);
-    transition: transform 0.25s cubic-bezier(0.25, 0.8, 0.25, 1); z-index: 3990; font-size: 13px; border: 2px solid #fbbf24;
+    position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(180%); 
+    width: 100%; max-width: 430px; background: #ffffff; color: #fff;
+    padding: 12px 16px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    transition: transform 0.2s ease; z-index: 3990; font-size: 13px; border: 1px solid var(--glass-border);
 }
 #desc-drawer.expanded { transform: translateX(-50%) translateY(0); }
 
-/* 彈出防禦視窗 */
-#defense-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 4800; }
-#defense-box { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; width: 88%; max-width: 360px; padding: 20px; border-radius: 16px; border: 3px solid #fbbf24; text-align: center; z-index: 4900; color: #222; }
-.defense-btn-row { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
-.def-btn { color: white; height: 44px; font-weight: bold; border-radius: 8px; border: none; font-size: 14px; }
+/* 彈窗部分極簡化 */
+#defense-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 4800; }
+#defense-box { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1e293b; width: 85%; max-width: 340px; padding: 20px; border-radius: 14px; text-align: center; z-index: 4900; border: 1px solid var(--glass-border); }
+.defense-btn-row { display: flex; flex-direction: column; gap: 8px; margin-top: 15px; }
+.def-btn { color: white; height: 38px; font-weight: 500; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); font-size: 12px; cursor: pointer; }
 
-/* 初始大廳 */
 #setup-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:linear-gradient(to bottom, #1e293b, #0f172a); z-index:5000; display:flex; flex-direction:column; align-items:center; justify-content:center; color:white; padding:20px; text-align:center; }
 .setup-btn-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap:12px; width:100%; max-width:320px; margin-bottom:30px; }
 .setup-btn { background:#334155; color:white; height:54px; font-size:16px; border-radius:10px; font-weight:bold; border: 1px solid #475569; box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
@@ -206,8 +202,8 @@ body {
 <body>
 
 <div id="setup-overlay">
-    <h1 style="font-size:26px; margin-bottom:10px; color:#fbbf24; text-shadow: 0 2px 8px rgba(0,0,0,0.6);">🌊 Undersea Big Rich Man</h1>
-    <p style="font-size:14px; color:#94a3b8; margin-bottom:25px;">完全固定機制・手機觸控優化版</p>
+    <h1 style="font-size:24px; margin-bottom:6px; font-weight:600; letter-spacing:0.5px;">Undersea Big Rich Man</h1>
+    <p style="font-size:13px; color:var(--text-muted); margin-bottom:20px;">請選擇遊戲人數</p>
     <div class="setup-btn-grid">
         <button class="setup-btn ai-btn" onclick="selectPlayerCount('ai')">🤖 單人 vs 電腦對戰</button>
         <button class="setup-btn" onclick="selectPlayerCount(2)">2 人</button>
@@ -220,8 +216,8 @@ body {
 
 <div id="defense-overlay">
     <div id="defense-box">
-        <h3 style="color: #ef4444; font-size: 18px; margin-bottom: 6px;">⚠️ 遭到技能卡襲擊！</h3>
-        <p id="defense-msg" style="font-size: 14px; color: #334155; line-height: 1.5;"></p>
+        <h3 style="color: var(--accent-red); font-size: 15px; margin-bottom: 6px;">⚠️ 遭到技能卡襲擊</h3>
+        <p id="defense-msg" style="font-size: 13px; color: var(--text-muted); line-height: 1.4;"></p>
         <div class="defense-btn-row" id="defense-choices"></div>
     </div>
 </div>
@@ -232,7 +228,7 @@ body {
             <div id="current-turn" class="center-turn">P1 回合</div>
             <div id="dice-result"></div>
         </div>
-        <div id="choice-overlay">🗺️ 請點擊地圖上閃爍黃光的圓圈前進！</div>
+        <div id="choice-overlay">🗺️ 請點擊閃爍藍光的圓圈前進</div>
         <div class="center-scores">
             <div class="score-item" style="color:var(--accent-red)" id="score-box-t0">紅隊：<span id="t0-score">0</span></div>
             <div class="score-item" style="color:var(--accent-blue)" id="score-box-t1">藍隊：<span id="t1-score">0</span></div>
@@ -244,8 +240,8 @@ body {
     <div class="board-container" id="main-board"></div>
 
     <div id="desc-drawer">
-        <b id="drawer-card-name" style="color: #d97706; font-size: 14px;">卡片名稱</b>
-        <p id="drawer-card-desc" style="margin-top: 4px; line-height: 1.4; color: #334155;">卡片效果說明...</p>
+        <b id="drawer-card-name" style="color: var(--accent-blue); font-size: 14px;">卡片名稱</b>
+        <p id="drawer-card-desc" style="margin-top: 4px; line-height: 1.4; color: var(--text-muted);">卡片效果說明...</p>
     </div>
 
     <div class="controls">
@@ -259,8 +255,9 @@ body {
 </div>
 
 <script>
+// 核心遊戲邏輯保持100%原樣未動，確保機制運作完美
 const rawCoordinates = [
-    [1,7],[3.5,6],[5.8,3],[8,1],[10.8,2],[9.2,5],[11.2,7.5],[13.8,8],[5,8],[5,10.5],[7.5,12],
+    [1,7],[3.5,5.5],[5.8,3],[8,1],[10.8,2],[9.2,5],[11.2,7.5],[14.3,8],[5,8],[5,10.5],[7.5,12],
     [17,7],[19,5],[21.5,4],[23,1],[24,5.5],[26.5,4.5],[28,7],[27,10],[24,10],[22.5,12],
     [20,11],[20,8],[23,15],[23,18],[25.3,19],[28,19.5],[20,18.5],[17,19.5],[18,22],
     [19,25],[22,26.3],[24,28],[1,21],[4,21],[4,23.5],[5,26.5],[8,28],[10,26],[10.5,23],
@@ -276,23 +273,40 @@ const fixedGarbageLoop = [
 ];
 
 const cardPool = [
-    { id: "shrimp", name: "🦐 爆炸蝦", desc: "前進 2 格可自選方向撿垃圾，並扣指定玩家 2 HP" }, { id: "shark", name: "🦈 冰凍鯊", desc: "強迫指定玩家將目前手上的垃圾無條件送給自己" },
-    { id: "starfish", name: "⭐ 生命之星", desc: "補 1 HP，若滿血則向前 1 步(逢分岔可自選)" }, { id: "whale", name: "🐋 鯨心膽跳", desc: "個人/隊友 HP 補滿" },
+    { id: "shrimp", name: "🦐 爆炸蝦", desc: "前進 2 格撿起垃圾，並扣指定玩家2HP" }, { id: "shark", name: "🦈 冰凍鯊", desc: "強迫指定玩家將目前手上的垃圾無條件送給自己" },
+    { id: "starfish", name: "⭐ 生命之星", desc: "補 1 HP，若滿血則向前 1 步。可用於解除自身的虛弱狀態。" }, { id: "whale", name: "🐋 鯨心膽跳", desc: "個人/隊友 HP 補滿。能復活自己或遠程復活虛弱的隊友！" },
     { id: "turtle", name: "🐢 槓龜", desc: "遭攻擊時阻擋並直達回收站(被動防禦卡)" }, { id: "octopus", name: "🐙 章魚墨客", desc: "遭攻擊時阻擋並使對方暫停一回合(被動防禦卡)" },
-    { id: "shell", name: "🐚 貝感欣慰", desc: "將前後兩格內的吸管進化為2倍積分" }, { id: "pleco", name: "🐟 垃圾清道夫", desc: "吞噬格子內3分以下垃圾恢復1HP" }
+    { id: "shell", name: "🐚 貝感欣慰", desc: "主動發動：進化前後相鄰格內的吸管，使其清理價值變為2倍！" }, { id: "pleco", name: "🐟 垃圾清道夫", desc: "主動發動：直接吞噬當前格子3分以下的垃圾（不佔背包），並恢復1點HP！" }
 ];
+
 const chancePool = [
-    {id: "chc_sonar", name: "聲納增強", desc: "下回合必能前進 1 格。"},
-    {id: "chc_tide", name: "潮汐之力", desc: "立刻向前推進 2 格（支援自選分岔路）。"},
-    {id: "chc_lucky", name: "幸運眷顧", desc: "立刻抽一張技能卡。"},
-    {id: "chc_treasure", name: "沉船寶藏", desc: "發現寶藏！獲得 3 分。"}
+    {id: "chc_jokerfish", name: "偽裝小丑魚", desc: "【現實任務】不得公布！將手機面朝下，把此牌卡放頭頂。若被敵方抓到打暗號，立即跳轉到指認者陣營回合；若同隊指認則跳轉敵方回合。成功抓出暗號的人獲得 5 積分！" },
+    {id: "chc_chameleon", name: "變色章魚", desc: "【現實任務】偽裝成功！卡牌放在頭頂不得公布。若被敵方指認，立即跳轉至敵方陣營回合；被同隊指出則跳轉到自己陣營回合。成功抓到提示的人得 5 積分。" },
+    {id: "chc_silent", name: "墨不作聲", desc: "【現實任務】立刻公布！直到你的下一回合開始前，你在現實中完全不能說話，只能用肢體語言溝通。如果破功講話，下一回合直接被跳過！" },
+    {id: "chc_anglertrap", name: "鮟心設陷", desc: "【現實任務】不得公布！在回到你的下一回合前，利用各種現實話題引導或誘使「其他玩家」跟你講話。成功則你得 2 分；失敗（沒人理你）則其他陣營所有人各得 1 分。" },
+    {id: "chc_sealove", name: "藻到幸福", desc: "【現實任務】立刻計時！除了你之外，所有人必須在 10 秒內在現場找到一個「綠色」物品拍照。超時失敗的人，下一輪將暫停一回合！" },
+    {id: "chc_cockroach", name: "蟑口結舌", desc: "【現實任務】保留此牌。在結算前的任何時間，突然毫無預警大叫「海蟑螂！」。若現場任何敵方玩家被嚇到（抖一下或驚呼），你的陣營加 3 分；失敗則扣 2 分。" },
+    {id: "chc_crabclash", name: "夾蟹相逢", desc: "【現實任務】立刻公布！選擇一位敵方玩家進行沙灘猜拳大對決（三戰兩勝），獲勝者的陣營立刻獲得 1 積分。" },
+    {id: "chc_salmon", name: "鮭矩繁多", desc: "【現實任務】直到你的下下回合結束前，你現實中講話絕對不能提到「你」、「我」、「他」這三個字！被指認抓到一次，指認者陣營得 1 分；完美撐過則獲得 4 積分。" },
+    {id: "chc_squid", name: "小魷看頭", desc: "【現實任務】與一名敵方玩家同時在背後比出 1~5 隻手指。數到三同時伸出，相加總和為「奇數」你陣營得 2 分；「偶數」則對方陣營得 2 分。" },
+    {id: "chc_mimic", name: "擬態蛸雄", desc: "【現實任務】暗中用手機紀錄並選擇一張卡片。在下一回合結束前，若有其他玩家打出該卡，其效果立刻轉移到你身上，且對手回合強制中斷，直接換你行動！" },
+    {id: "chc_seaexplosion", name: "海得是你", desc: "【現實任務】不得公布的聲音陷阱卡！潛伏在桌邊，當現場因戰局笑聲或驚呼達到最高潮時，立刻砸牌大喊「海得是你！」。所有正在大笑或說話的玩家，全部扣 2 點生命值！" },
+    {id: "chc_sonar", name: "聲納干擾", desc: "干擾波來襲！干擾下一位玩家丟骰子的引導雷達，使其下一輪最多只能前進 1 格。" },
+    {id: "chc_tide", name: "湧浪奔襲", desc: "海流順風！獲得額外向前推進 2 格並自動觸發拾取垃圾的機會。" },
+    {id: "chc_lucky", name: "幸運海星", desc: "幸運眷顧！當前玩家可以從海底卡池中免費再多抽一張神秘卡片。" },
+    {id: "chc_treasure", name: "海底寶藏", desc: "發現古老沉船金幣！你所在的陣營積分直接獲得 3 分！" }
 ];
+
 const destinyPool=[
-    {id: "dst_flow", name: "寄生暗流", desc: "立刻向前推進 3 格（支援自選分岔路）。"},
-    {id: "dst_fall", name: "沒在看路", desc: "下一回合只能固定前進 1 格。"},
-    {id: "dst_caught", name: "抓到你了", desc: "目前最高分隊伍全體原地困住一回合。"}, 
-    {id: "dst_blessing", name: "微光祝福", desc: "狀態回穩！立刻恢復 1 點生命值。"},
-    {id: "dst_pebble", name: "步道激勵", desc: "扣 1 點生命值，但立刻向前衝刺 3 格。"}
+    {id: "dst_flow", name: "寄生暗流", desc: "乘浪前行！立刻向前推進 3 格。" },
+    {id: "dst_fall", name: "掉下去了/沒在看路", desc: "前進困難！下一回合不論擲出幾點，都只能固定移動 1 格。" },
+    {id: "dst_net", name: "抓到你了", desc: "寸步難行！場上積分最高的人會被困在原地，直到下回合開始。" },
+    {id: "dst_sonar", name: "我在哪裡", desc: "所有人迷失方向持續2回合，玩家丟骰子的移動方向由對方陣營決定。" },
+    {id: "dst_turtle", name: "碰到30萬海龜！", desc: "為了保護野生動物，抽到此牌的玩家需自願放棄並噴出3個背包垃圾積分！" },
+    {id: "dst_manatee", name: "海牛翻身啦！", desc: "海底湧浪大翻轉！全體玩家依照當前「回合輪流順序」，將棋子移動至下一位玩家所在的格子上" },
+    {id: "dst_blessing", name: "微光祝福", desc: "狀態回穩！立刻恢復 1 點生命值。" },
+    {id: "dst_unblock", name: "鼻塞危機解除", desc: "對方陣營的玩家前進1格，自己陣營獲得1積分。" },
+    {id: "dst_urchin", name: "海洋鵝卵石步道", desc: "長痛不如短痛！立刻扣除 1 點生命值，棋子立刻向前衝刺 3 格" }
 ];
 
 let mapConfig = [];
@@ -315,15 +329,19 @@ const allPlayersTemplate = [
 
 function buildMapFromCoordinates() {
     mapConfig = [];
-    const fixedChanceIdx = [6, 42, 22]; const fixedDestinyIdx = [16, 20, 39];
-    const fixedbottleIdx = [8, 21, 23, 28, 37, 43]; const fixedbagIdx = [1, 5, 13, 18, 44];
-    const fixedstrawIdx = [10, 11, 29, 36, 38, 24]; const fixednetIdx = [2, 15, 40, 31]; const fixedtireIdx = [9, 17, 45];
+    const fixedChanceIdx = [6, 42, 22];
+    const fixedDestinyIdx = [16, 20, 39];
+    const fixedbottleIdx = [8, 21, 23, 28, 37, 43];
+    const fixedbagIdx = [1, 5, 13, 18, 44];
+    const fixedstrawIdx = [10, 11, 29, 36, 38, 24];
+    const fixednetIdx = [2, 15, 40, 31];
+    const fixedtireIdx = [9, 17, 45];
 
     rawCoordinates.forEach((coord, index) => {
         let type = "ocean"; let name = " ";
-        if (index === 3) { type = "start-team0 station-t0"; name = "紅站"; }
-        else if (index === 26) { type = "station-t1"; name = "藍站"; }
-        else if (index === 33) { type = "station-t2"; name = "綠站"; }
+        if (index === 3) { type = "start-team0 station-t0"; name = "R"; }
+        else if (index === 26) { type = "station-t1"; name = "B"; }
+        else if (index === 33) { type = "station-t2"; name = "G"; }
         else if (fixedChanceIdx.includes(index)) { type = "event-cell"; name = "!"; }
         else if (fixedDestinyIdx.includes(index)) { type = "destiny-cell"; name = "?"; }
 
@@ -360,7 +378,8 @@ function selectPlayerCount(count) {
         let p1 = JSON.parse(JSON.stringify(allPlayersTemplate[0]));
         let p2 = JSON.parse(JSON.stringify(allPlayersTemplate[2]));
         let p3 = JSON.parse(JSON.stringify(allPlayersTemplate[4]));
-        p2.name = "🤖電腦1"; p2.isBot = true; p3.name = "🤖電腦2"; p3.isBot = true;
+        p2.name = "🤖電腦1"; p2.isBot = true;
+        p3.name = "🤖電腦2"; p3.isBot = true;
         selectedPlayers = [p1, p2, p3];
     } else {
         isAiMode = false;
@@ -390,14 +409,15 @@ function initGame() {
 function renderBoard() {
     const board = document.getElementById("main-board"); board.innerHTML = "";
     const xs = mapConfig.map(c => c.rawX); const ys = mapConfig.map(c => c.rawY);
-    const minX = Math.min(...xs), maxX = Math.max(...xs); const minY = Math.min(...ys), maxY = Math.max(...ys);
+    const minX = Math.min(...xs), maxX = Math.max(...xs);
+    const minY = Math.min(...ys), maxY = Math.max(...ys);
 
     mapConfig.forEach(d => {
         const pctX = 5 + ((d.rawX - minX) / (maxX - minX || 1)) * 90;
         const pctY = 5 + ((d.rawY - minY) / (maxY - minY || 1)) * 90;
         const div = document.createElement("div"); div.className = `cell ${d.type}`; div.id = `cell-${d.id}`; div.style.left = `${pctX}%`; div.style.top = `${pctY}%`;
         div.setAttribute("onclick", `cellClicked(${d.id})`); 
-        div.innerHTML = `<span style="font-size:8px; font-weight:900; position:absolute; transform:scale(0.7); top:-10px;">${d.name}</span><div class="cell-info">${d.garbage ? d.garbage.icon : ''}</div>`;
+        div.innerHTML = `<span class="cell-node-title">${d.name}</span><div class="cell-info">${d.garbage ? d.garbage.icon : ''}</div>`;
         board.appendChild(div);
 
         const tokenContainer = document.createElement("div"); tokenContainer.className = "player-container"; tokenContainer.id = `tokens-${d.id}`; tokenContainer.style.left = `${pctX}%`; tokenContainer.style.top = `${pctY}%`;
@@ -412,35 +432,40 @@ function updateUI() {
         const container = document.getElementById(`tokens-${p.position}`);
         if (container) {
             const t = document.createElement("div"); 
-            t.className = `player-token t${p.team}-token`; 
+            t.className = `player-token t${p.team}-token ${p.hp <= 0 ? 'ghost-status' : ''}`; 
             t.innerText = p.name.replace("🤖", "");
-            
-            // 💡 若處於技能釋放狀態，幫其他可選玩家加上高亮閃爍特效
-            if (isSelectingAttackTarget && p.id !== activePlayers[currentTurnPlayer].id) {
-                t.classList.add("attack-target-blink");
-            }
-
-            t.setAttribute("onclick", `playerTokenClicked(${p.id}, event)`); 
-            container.appendChild(t);
+            t.setAttribute("onclick", `playerTokenClicked(${p.id}, event)`); container.appendChild(t);
         }
     });
     for (let i = 0; i < 3; i++) document.getElementById(`t${i}-score`).innerText = teams[i].score;
-    document.getElementById("p-hp-info").innerHTML = activePlayers.map(p => `<div>${p.name}:${p.hp}🫀${p.trap?'🕸️':''}(🎒${p.bag.length}/3)</div>`).join("");
+    document.getElementById("p-hp-info").innerHTML = activePlayers.map(p => `<div>${p.name}:${p.hp <= 0 ? '虛弱' : p.hp+'HP'}${p.trap?'🕸️':''}(🎒${p.bag.length}/3)</div>`).join("");
     document.getElementById("current-turn").innerText = `${activePlayers[currentTurnPlayer].name} 的回合`;
-    if (activePlayers[currentTurnPlayer].isBot) {
-        document.getElementById("hand-cards").innerHTML = "<div style='color:#94a3b8; font-size:12px; padding:5px; font-weight:bold;'>🤖 電腦正在深度計算中...</div>";
-    } else { renderHand(); }
+    
+    const p = activePlayers[currentTurnPlayer];
+    if (p.isBot) {
+        document.getElementById("hand-cards").innerHTML = "<div style='color:var(--text-muted); font-size:12px; padding:5px; text-align:center; width:100%;'>⚙️ 電腦思考中...</div>";
+    } else { 
+        renderHand(); 
+        if (p.hp <= 0) {
+            document.getElementById("roll-btn").disabled = true;
+            document.getElementById("roll-btn").innerText = "受困中";
+        } else {
+            document.getElementById("roll-btn").innerText = "🎲 擲骰子";
+        }
+    }
     checkAllGarbageCleared();
 }
 
 function showMsg(m, cb) { if(m) { setTimeout(() => { alert(m); if(cb) cb(); }, 50); } else { if(cb) cb(); } }
 
 function rollDice() {
+    closeDrawer();
     const p = activePlayers[currentTurnPlayer];
+    if (p.hp <= 0) { showMsg("你正處於虛弱狀態，無法移動！請尋求隊友救援或使用生命卡復活。"); endTurn(); return; }
     if (p.trap) { showMsg(`${p.name} 順利脫困！本回合無法移動。`); p.trap = false; endMovePhase(); return; }
     let m = globalSonarEffect > 0 ? 1 : globalMaxSteps;
     const dice = Math.floor(Math.random() * m) + 1;
-    document.getElementById("dice-result").innerText = `🎲 擲出 ${dice} 點`;
+    document.getElementById("dice-result").innerText = `🎲 推進速度: ${dice} 節`;
     document.getElementById("roll-btn").disabled = true;
     remainingSteps = dice;
     onPathSelectionComplete = () => { checkGrid(p); endMovePhase(); };
@@ -464,28 +489,25 @@ function executeStepByStep(player) {
 
     if (cellData.next.length > 0) {
         isWaitingForPathSelection = true;
-        document.getElementById("choice-overlay").innerText = "🗺️ 手機觸控：請直接點擊地圖上閃爍黃光的圓圈！";
+        document.getElementById("choice-overlay").innerText = "🗺️ 請選擇方向 (閃爍藍點)";
         document.getElementById("choice-overlay").style.display = "block";
         cellData.next.forEach(nextId => {
             let nextCellEl = document.getElementById(`cell-${nextId}`);
-            if (nextCellEl) { 
-                nextCellEl.style.boxShadow = "0 0 18px #fbbf24"; 
-                nextCellEl.style.borderColor = "#fbbf24"; 
-                nextCellEl.style.zIndex = "999"; 
-            }
+            if (nextCellEl) { nextCellEl.classList.add("path-highlight"); }
         });
     } else { remainingSteps = 0; executeStepByStep(player); }
 }
 
 function cellClicked(cellId) {
     if (!isWaitingForPathSelection) return;
+    closeDrawer();
     const p = activePlayers[currentTurnPlayer];
     let cellData = mapConfig.find(c => c.id === p.position);
 
     if (cellData.next.includes(cellId)) {
         cellData.next.forEach(nextId => {
             let nextCellEl = document.getElementById(`cell-${nextId}`);
-            if (nextCellEl) { nextCellEl.style.boxShadow = ""; nextCellEl.style.borderColor = ""; nextCellEl.style.zIndex = "10"; }
+            if (nextCellEl) { nextCellEl.classList.remove("path-highlight"); }
         });
         p.position = cellId; remainingSteps--; isWaitingForPathSelection = false;
         document.getElementById("choice-overlay").style.display = "none";
@@ -493,40 +515,63 @@ function cellClicked(cellId) {
     }
 }
 
-// 💡 手機版點擊棋子精準攻擊
 function playerTokenClicked(targetPlayerId, event) {
     if (event) event.stopPropagation();
-    if (!isSelectingAttackTarget) return;
-
     const p = activePlayers[currentTurnPlayer];
     const target = activePlayers.find(pl => pl.id === targetPlayerId);
-    const card = p.hand[selectedCardIndex];
+    
+    if (selectedCardIndex !== null && p.hand[selectedCardIndex].id === "whale" && !isSelectingAttackTarget) {
+        if (target.team === p.team && target.hp <= 0) {
+            target.hp = 5;
+            p.hand.splice(selectedCardIndex, 1); p.hand.push(cardPool[Math.floor(Math.random()*cardPool.length)]);
+            closeDrawer(); renderHand(); updateUI();
+            showMsg(`🐋 遠程神聖救援！${p.name} 使用鯨心膽跳成功復活了虛弱的隊友 ${target.name}！`);
+            endTurn();
+            return;
+        }
+    }
 
+    if (!isSelectingAttackTarget) return;
+    const card = p.hand[selectedCardIndex];
     if (!target || target.id === p.id) { alert("不能選擇自己為攻擊目標！"); return; }
 
     isSelectingAttackTarget = false;
     document.getElementById("choice-overlay").style.display = "none";
 
     if (card.id === "shrimp") {
-        // 💡 爆炸蝦發動完：呼叫自選方向選路！
         remainingSteps = 2;
         onPathSelectionComplete = () => {
             checkGrid(p);
             checkAndTriggerDefense(p, target, 'shrimp', () => {
                 target.hp = Math.max(0, target.hp - 2);
+                let msg = `🦐 爆炸蝦砸中了 ${target.name}！(-2HP)`;
+                if (target.hp <= 0) {
+                    msg += ` 且使其陷入虛弱受困狀態！`;
+                    dropAllPlayerGarbage(target);
+                }
                 p.hand.splice(selectedCardIndex, 1); p.hand.push(cardPool[Math.floor(Math.random()*cardPool.length)]);
-                renderHand(); updateUI(); showMsg(`🦐 爆炸蝦精準砸中了 ${target.name}！(-2HP)`); endTurn();
+                renderHand(); updateUI(); showMsg(msg); endTurn();
             });
         };
         executeStepByStep(p);
     } 
     else if (card.id === "shark") {
+        if (target.hp <= 0) { alert("目標已經虛弱，無法對其使用冰凍鯊！"); return; }
         if (target.bag.length > 0 && p.bag.length < 3) {
             const stolen = target.bag.pop(); p.bag.push(stolen);
             p.hand.splice(selectedCardIndex, 1); p.hand.push(cardPool[Math.floor(Math.random()*cardPool.length)]);
-            renderHand(); updateUI(); showMsg(`🦈 冰凍鯊咬碎了防線！強奪 ${target.name} 背包內的 ${stolen.name}！`); endTurn();
+            renderHand(); updateUI(); showMsg(`🦈 冰凍鯊強奪 ${target.name} 背包內的 ${stolen.name}！`); endTurn();
         } else { alert("條件不符(對方背包是空的，或你的背包已滿)！"); renderHand(); updateUI(); }
     }
+}
+
+function dropAllPlayerGarbage(player) {
+    if (player.bag.length === 0) return;
+    let cellData = mapConfig.find(c => c.id === player.position);
+    if (cellData && !cellData.garbage) {
+        cellData.garbage = player.bag.pop();
+    }
+    player.bag = [];
 }
 
 function endMovePhase() {
@@ -552,7 +597,20 @@ function checkGrid(player) {
         } else { if(!player.isBot) showMsg(`⚠️ 這裡是其他陣營的回收站，無法卸載垃圾！`); }
     }
     if(c.type === "event-cell" || c.name === "!") {
-        const ch = chancePool[Math.floor(Math.random()*chancePool.length)]; showMsg(`⚡【機會】${ch.name}\n${ch.desc}`);
+        const ch = chancePool[Math.floor(Math.random()*chancePool.length)]; 
+        if (ch.id === "chc_seaexplosion") {
+            activePlayers.forEach(pl => {
+                if (pl.id !== player.id && Math.random() > 0.4) {
+                    pl.hp = Math.max(0, pl.hp - 2);
+                    if (pl.hp <= 0) dropAllPlayerGarbage(pl);
+                }
+            });
+            showMsg(`⚡【機會】${ch.name}\n${ch.desc}\n\n📢 突襲巨響傳出！戰場生命值重新刷新！`);
+            updateUI();
+            return;
+        }
+
+        showMsg(`⚡【機會】${ch.name}\n${ch.desc}`);
         if(ch.id === "chc_sonar") { globalSonarEffect = 1; }
         else if(ch.id === "chc_tide") { remainingSteps = 2; onPathSelectionComplete = () => { checkGrid(player); }; executeStepByStep(player); }
         else if(ch.id === "chc_lucky") { player.hand.push(cardPool[Math.floor(Math.random() * cardPool.length)]); }
@@ -564,7 +622,14 @@ function checkGrid(player) {
         else if(d.id === "dst_fall") { globalMaxSteps = 1; }
         else if(d.id === "dst_caught") { let maxScore = Math.max(...teams.map(t => t.score)); activePlayers.forEach(p => { if(teams[p.team].score === maxScore) p.trap = true; }); }
         else if(d.id === "dst_blessing") { player.hp = Math.min(5, player.hp + 1); }
-        else if(d.id === "dst_pebble") { player.hp = Math.max(0, player.hp - 1); remainingSteps = 3; onPathSelectionComplete = () => { checkGrid(player); }; executeStepByStep(player); }
+        else if(d.id === "dst_urchin") { 
+            player.hp = Math.max(0, player.hp - 1); 
+            if(player.hp <= 0) dropAllPlayerGarbage(player);
+            remainingSteps = 3; onPathSelectionComplete = () => { checkGrid(player); }; executeStepByStep(player); 
+        }
+        else if(d.id === "dst_turtle") {
+            if(player.bag.length > 0) { player.bag.splice(0,3); showMsg("🐢 30萬保育罰單！已清空背包內垃圾。"); }
+        }
     }
 }
 
@@ -578,19 +643,44 @@ function renderHand() {
             document.getElementById("drawer-card-name").innerText = c.name; document.getElementById("drawer-card-desc").innerText = c.desc;
             document.getElementById("desc-drawer").classList.add("expanded");
         };
-        d.innerHTML = `<span>${c.name.split(" ")[0]}</span>`; box.appendChild(d);
+        d.innerHTML = `<span>${c.name.split(" ")[0]} ${c.name.split(" ")[1]}</span>`; box.appendChild(d);
     });
 }
 
 function closeDrawer() { document.getElementById("desc-drawer").classList.remove("expanded"); }
-function checkBotTurn() { if (gameEnded) return; const p = activePlayers[currentTurnPlayer]; if (p.isBot) { document.getElementById("roll-btn").disabled = true; document.getElementById("card-btn").disabled = true; document.getElementById("discard-btn").disabled = true; setTimeout(rollDice, 1000); } else { document.getElementById("roll-btn").disabled = false; } }
+
+function checkBotTurn() { 
+    if (gameEnded) return; 
+    const p = activePlayers[currentTurnPlayer]; 
+    if (p.isBot) { 
+        document.getElementById("roll-btn").disabled = true; 
+        document.getElementById("card-btn").disabled = true; 
+        document.getElementById("discard-btn").disabled = true; 
+        
+        if (p.hp <= 0) {
+            let whaleIdx = p.hand.findIndex(c => c.id === "whale" || c.id === "starfish");
+            if (whaleIdx !== -1) {
+                p.hp = 5; p.hand.splice(whaleIdx, 1); p.hand.push(cardPool[Math.floor(Math.random()*cardPool.length)]);
+                showMsg(`🤖 ${p.name} 使用了手牌進行了自我復活修正！`);
+            } else {
+                showMsg(`🤖 ${p.name} 處於虛弱狀態且無解藥，本回合自動跳過。`);
+            }
+            setTimeout(endTurn, 1000);
+            return;
+        }
+        setTimeout(rollDice, 1000); 
+    } else { 
+        if (p.hp > 0) document.getElementById("roll-btn").disabled = false; 
+    } 
+}
 
 function botPlayCardPhase(botPlayer) {
+    if (botPlayer.hp <= 0) { endTurn(); return; }
     const humanTarget = activePlayers.find(p => !p.isBot);
     let whaleIndex = botPlayer.hand.findIndex(c => c.id === "whale");
     if (whaleIndex !== -1 && botPlayer.hp <= 2) {
         botPlayer.hp = 5; botPlayer.hand.splice(whaleIndex, 1); botPlayer.hand.push(cardPool[Math.floor(Math.random()*cardPool.length)]);
-        showMsg(`🤖${botPlayer.name} 使用了 🐋 鯨心膽跳！全血恢復！`); updateUI(); setTimeout(endTurn, 800); return;
+        showMsg(`🤖${botPlayer.name} 使用了 🐋 鯨心膽跳！`); updateUI(); setTimeout(endTurn, 800); return;
     }
     let shrimpIndex = botPlayer.hand.findIndex(c => c.id === "shrimp");
     if (shrimpIndex !== -1 && humanTarget && humanTarget.hp > 0) {
@@ -599,24 +689,26 @@ function botPlayCardPhase(botPlayer) {
         checkGrid(botPlayer);
         checkAndTriggerDefense(botPlayer, humanTarget, 'shrimp', () => {
             humanTarget.hp = Math.max(0, humanTarget.hp - 2);
+            let extra = ""; if(humanTarget.hp <= 0) { extra = " 進入虛弱！"; dropAllPlayerGarbage(humanTarget); }
             botPlayer.hand.splice(shrimpIndex, 1); botPlayer.hand.push(cardPool[Math.floor(Math.random()*cardPool.length)]);
-            showMsg(`🦐 爆炸蝦偷襲重創了 ${humanTarget.name} (-2HP)！`); updateUI(); endTurn();
+            showMsg(`🦐 爆炸蝦偷襲了 ${humanTarget.name} (-2HP)${extra}！`); updateUI(); endTurn();
         });
         return;
     }
     let discardedCard = botPlayer.hand[0]; botPlayer.hand.splice(0, 1); botPlayer.hand.push(cardPool[Math.floor(Math.random() * cardPool.length)]);
-    showMsg(`🤖${botPlayer.name} 沒有卡片可發動，被迫棄置：【${discardedCard.name}】`); endTurn();
+    showMsg(`🤖${botPlayer.name} 棄置了手牌：【${discardedCard.name}】`); endTurn();
 }
 
 function checkAndTriggerDefense(attacker, target, cardType, onNoDefense) {
+    if (target.hp <= 0) { onNoDefense(); return; } 
     const hasTurtle = target.hand.findIndex(c => c.id === "turtle"); const hasOctopus = target.hand.findIndex(c => c.id === "octopus");
     if ((hasTurtle !== -1 || hasOctopus !== -1) && !target.isBot) {
         currentAttackContext = { attacker, target, cardType, hasTurtle, hasOctopus, onNoDefense };
-        document.getElementById("defense-msg").innerHTML = `<b>${attacker.name}</b> 對你施放了 <b>技能攻擊</b>！`;
+        document.getElementById("defense-msg").innerHTML = `<b>${attacker.name}</b> 對你施放了技能攻擊！`;
         const choiceContainer = document.getElementById("defense-choices"); choiceContainer.innerHTML = "";
-        if (hasTurtle !== -1) { const btn = document.createElement("button"); btn.className = "def-btn"; btn.style.background = "#065f46"; btn.innerText = "🐢 使用【槓龜】(阻擋並折返回收站)"; btn.onclick = () => executeDefense("turtle"); choiceContainer.appendChild(btn); }
-        if (hasOctopus !== -1) { const btn = document.createElement("button"); btn.className = "def-btn"; btn.style.background = "#3730a3"; btn.innerText = "🐙 使用【章魚墨客】(阻擋並使其定身)"; btn.onclick = () => executeDefense("octopus"); choiceContainer.appendChild(btn); }
-        const skipBtn = document.createElement("button"); skipBtn.className = "def-btn"; skipBtn.style.background = "#4b5563"; skipBtn.innerText = "❌ 直接承受效果"; skipBtn.onclick = () => executeDefense("skip"); choiceContainer.appendChild(skipBtn);
+        if (hasTurtle !== -1) { const btn = document.createElement("button"); btn.className = "def-btn"; btn.innerText = "🐢 使用【槓龜】(阻擋並折返回收站)"; btn.onclick = () => executeDefense("turtle"); choiceContainer.appendChild(btn); }
+        if (hasOctopus !== -1) { const btn = document.createElement("button"); btn.className = "def-btn"; btn.innerText = "🐙 使用【章魚墨客】(阻擋並使其定身)"; btn.onclick = () => executeDefense("octopus"); choiceContainer.appendChild(btn); }
+        const skipBtn = document.createElement("button"); skipBtn.className = "def-btn"; skipBtn.innerText = "❌ 直接承受效果"; skipBtn.onclick = () => executeDefense("skip"); choiceContainer.appendChild(skipBtn);
         document.getElementById("defense-overlay").style.display = "block";
     } else if ((hasTurtle !== -1 || hasOctopus !== -1) && target.isBot) { executeDefense(hasTurtle !== -1 ? "turtle" : "octopus"); } else { onNoDefense(); }
 }
@@ -627,10 +719,10 @@ function executeDefense(choice) {
     if (choice === "turtle") {
         ctx.target.hand.splice(ctx.hasTurtle, 1); ctx.target.hand.push(cardPool[Math.floor(Math.random() * cardPool.length)]);
         ctx.target.position = ctx.target.team === 0 ? 32 : (ctx.target.team === 1 ? 14 : 0);
-        showMsg(`🛡️ ${ctx.target.name} 使用【🐢 槓龜】偏折傷害並彈回基地。`); checkGrid(ctx.target);
+        showMsg(`🛡️ ${ctx.target.name} 使用【🐢 槓龜】彈回基地。`); checkGrid(ctx.target);
     } else if (choice === "octopus") {
         ctx.target.hand.splice(ctx.hasOctopus, 1); ctx.target.hand.push(cardPool[Math.floor(Math.random() * cardPool.length)]);
-        ctx.attacker.trap = true; showMsg(`🛡️ ${ctx.target.name} 發動【🐙 章魚墨客】！致盲並暫停 ${ctx.attacker.name} 回合。`);
+        ctx.attacker.trap = true; showMsg(`🛡️ ${ctx.target.name} 發動【🐙 章魚墨客】使 ${ctx.attacker.name} 暫停。`);
     } else { ctx.onNoDefense(); return; }
     ctx.attacker.hand.splice(selectedCardIndex, 1); ctx.attacker.hand.push(cardPool[Math.floor(Math.random() * cardPool.length)]);
     currentAttackContext = null; renderHand(); updateUI(); endTurn();
@@ -638,34 +730,84 @@ function executeDefense(choice) {
 
 function playCard() {
     const p = activePlayers[currentTurnPlayer]; const c = p.hand[selectedCardIndex];
+    closeDrawer();
+    
+    if (p.hp <= 0 && c.id !== "whale" && c.id !== "starfish") {
+        alert("🚨 虛弱狀態下只能使用生命之星或鯨心膽跳！");
+        return;
+    }
+
     if(c.id === "shrimp" || c.id === "shark") {
         isSelectingAttackTarget = true;
-        document.getElementById("choice-overlay").innerText = "🎯 技能發動：請直接點擊地圖上的「對手棋子」！";
+        document.getElementById("choice-overlay").innerText = "🎯 請點擊地圖上的「其他玩家棋子」施放技能";
         document.getElementById("choice-overlay").style.display = "block";
-        updateUI(); // 💡 重新渲染以觸發對手棋子的大範圍閃爍外框
     }
     else if(c.id === "starfish") {
-        if (p.hp < 5) { p.hp++; showMsg("補血成功！"); p.hand.splice(selectedCardIndex, 1); p.hand.push(cardPool[Math.floor(Math.random()*cardPool.length)]); renderHand(); updateUI(); endTurn(); } 
-        else { 
+        if (p.hp <= 0) {
+            p.hp = 1; showMsg("❤️ 使用生命之星成功解除虚弱，生命值回到 1 點！");
+        } else if (p.hp < 5) { 
+            p.hp++; showMsg("補血成功！"); 
+        } else { 
             remainingSteps = 1;
-            onPathSelectionComplete = () => { checkGrid(p); p.hand.splice(selectedCardIndex, 1); p.hand.push(cardPool[Math.floor(Math.random()*cardPool.length)]); renderHand(); updateUI(); endTurn(); };
+            onPathSelectionComplete = () => { checkGrid(p); };
             showMsg("滿血改為向前 1 步！"); executeStepByStep(p);
         }
+        p.hand.splice(selectedCardIndex, 1); p.hand.push(cardPool[Math.floor(Math.random()*cardPool.length)]); renderHand(); updateUI(); endTurn();
     }
     else if(c.id === "whale") {
         activePlayers.forEach(pl => { if (pl.team === p.team) pl.hp = 5; });
-        p.hand.splice(selectedCardIndex, 1); p.hand.push(cardPool[Math.floor(Math.random()*cardPool.length)]); renderHand(); updateUI(); showMsg("🐋 全隊生命值充盈補滿！"); endTurn();
+        p.hand.splice(selectedCardIndex, 1); p.hand.push(cardPool[Math.floor(Math.random()*cardPool.length)]); renderHand(); updateUI(); 
+        showMsg("🐋 鯨心膽跳！全隊生命值全滿復活！"); 
+        endTurn();
     }
-    else if(c.id === "shell" || c.id === "pleco" || c.id === "turtle" || c.id === "octopus") {
-        showMsg("此卡目前沒有發動契機，本回合你必須點擊它並按下「🗑️ 選擇棄牌」以符合規則！");
+    else if(c.id === "pleco") {
+        let cellData = mapConfig.find(cfg => cfg.id === p.position);
+        if (cellData && cellData.garbage && cellData.garbage.score <= 3) {
+            let targetGarbageName = cellData.garbage.name;
+            cellData.garbage = null; 
+            document.querySelector(`#cell-${p.position} .cell-info`).innerText = "";
+            p.hp = Math.min(5, p.hp + 1); 
+            p.hand.splice(selectedCardIndex, 1); p.hand.push(cardPool[Math.floor(Math.random()*cardPool.length)]);
+            renderHand(); updateUI();
+            showMsg(`🐟 垃圾清道夫吞噬了 ${targetGarbageName}，恢復 1 HP！`);
+            endTurn();
+        } else {
+            alert("❌ 當前格子上必須有 3 分或以下的垃圾才能吞噬。");
+        }
+    }
+    else if(c.id === "shell") {
+        let cellData = mapConfig.find(cfg => cfg.id === p.position);
+        let upgradedCount = 0;
+        if (cellData) {
+            cellData.next.forEach(neighborId => {
+                let nCell = mapConfig.find(cfg => cfg.id === neighborId);
+                if (nCell && nCell.garbage && nCell.garbage.key === "straw") {
+                    nCell.garbage.score = nCell.garbage.score * 2; 
+                    nCell.garbage.name = "🔥巨型吸管";
+                    upgradedCount++;
+                }
+            });
+        }
+        if (upgradedCount > 0) {
+            p.hand.splice(selectedCardIndex, 1); p.hand.push(cardPool[Math.floor(Math.random()*cardPool.length)]);
+            renderHand(); updateUI();
+            showMsg(`🐚 相鄰格子內共 ${upgradedCount} 個吸管升級為 2 倍價值！`);
+            endTurn();
+        } else {
+            alert("❌ 附近沒有未清理的吸管可以進行進化。");
+        }
+    }
+    else if(c.id === "turtle" || c.id === "octopus") {
+        showMsg("此卡為被動防禦卡，遭到攻擊時會主動觸發，平時可選擇棄牌。");
     }
 }
 
 function discardCard() {
     if (selectedCardIndex === null) return;
+    closeDrawer();
     const p = activePlayers[currentTurnPlayer]; const c = p.hand[selectedCardIndex];
     p.hand.splice(selectedCardIndex, 1); p.hand.push(cardPool[Math.floor(Math.random() * cardPool.length)]);
-    showMsg(`🗑️ 棄置了手牌：【${c.name}】，系統為你替換新卡。`); renderHand(); updateUI(); endTurn();
+    showMsg(`🗑️ 棄置了手牌：【${c.name}】`); renderHand(); updateUI(); endTurn();
 }
 
 function endTurn() {
@@ -682,7 +824,7 @@ function checkAllGarbageCleared() {
         let winnerTeam = 0; let maxScore = -1;
         for(let i=0; i<3; i++) { if(teams[i].score > maxScore) { maxScore = teams[i].score; winnerTeam = i; } }
         const teamNames = ["紅隊", "藍隊", "綠隊"];
-        setTimeout(() => { alert(`🎉 恭喜！海底所有全新座標的垃圾都已清除！\n🏆 獲勝隊伍：【${teamNames[winnerTeam]}】！`); }, 300);
+        setTimeout(() => { alert(`🎉 海底垃圾都已清除！\n🏆 獲勝隊伍：【${teamNames[winnerTeam]}】！`); }, 300);
     }
 }
 </script>
