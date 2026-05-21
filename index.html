@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>Undersea Big Rich Man - Clean Ocean Edition</title>
+<title>Undersea Big Rich Man </title>
 <style>
 :root {
     --bg-gradient: radial-gradient(circle at center, #2c3155 0%, #313251 100%);
@@ -27,10 +27,8 @@ body {
     height: 100vh; overflow: hidden;
 }
 
-/* 讓主容器高度吃滿，並用 flex 均分空間 */
 #game-container { width: 100%; max-width: 460px; display: flex; flex-direction: column; gap: 8px; height: 100%; justify-content: space-between; }
 
-/* 頂部狀態優化：縮小內距釋放空間 */
 .top-status-bar {
     width: 100%; background: rgba(255, 255, 255, 0.96); color: var(--text-main);
     display: flex; flex-direction: column; padding: 6px 8px; 
@@ -52,7 +50,6 @@ body {
 .score-item { text-align: center; flex: 1; font-weight: 500; font-size: 11px; }
 .center-hp { font-size: 11px; color: var(--text-muted); display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; text-align: center; }
 
-/* 棋盤容器優化：移除原本過大的 margin-bottom，改用 flex 彈性縮放 */
 .board-container {
     width: 100%;
     aspect-ratio: 1 / 1;
@@ -61,11 +58,10 @@ body {
     border: 1px solid var(--glass-border);
     position: relative;
     flex-grow: 1;
-    max-height: 60vh; /* 限制最大高度，防止擠壓下方按鈕 */
+    max-height: 60vh; 
     overflow: hidden;
 }
 
-/* 棋盤格子 */
 .cell { 
     position: absolute;
     width: 26px; height: 26px;
@@ -127,7 +123,6 @@ body {
     opacity: 0.5;
 }
 
-/* 底部控制區域：取消 fixed 固定定位，改用相對定位順著排列，防止重疊 */
 .controls { 
     width: 100%; 
     background: rgba(30, 41, 59, 0.98); 
@@ -156,7 +151,6 @@ body {
 #roll-btn { background: #fff; color: #000; font-weight: 600; border: none; }
 #card-btn:not(:disabled) { background: var(--accent-blue); color: #000; font-weight: 600; border: none; }
 
-/* 手牌區域 */
 .hand-container { display: flex; gap: 6px; overflow-x: auto; padding: 2px 0; }
 .hand-container::-webkit-scrollbar { display: none; }
 
@@ -173,7 +167,6 @@ body {
     transform: translateY(-2px);
 }
 
-/* 抽屜面板高度調整，避免擋住地圖 */
 #desc-drawer {
     position: fixed; bottom: 120px; left: 50%; transform: translateX(-50%) translateY(180%); 
     width: 90%; max-width: 430px; background: #ffffff; color: #334155;
@@ -250,11 +243,10 @@ body {
 </div>
 
 <script>
-// 核心遊戲邏輯 100% 保持不變，確保運作完美
 const rawCoordinates = [
     [1,7],[3.5,5.5],[5.8,3],[8,1],[10.8,2],[9.2,5],[11.2,7.5],[14.3,8],[5,8],[5,10.5],[7.5,12],
     [17,7],[19,5],[21.5,4],[23,1],[24,5.5],[26.5,4.5],[28,7],[27,10],[24,10],[22.5,12],
-    [20,11],[20,8],[23,15],[23,18],[25.3,19],[28,19.5],[20,18.5],[17,19.5],[18,22],
+    [20,11],[18,9.2],[23,15],[23,18],[25.3,19],[28,19.5],[20,18.5],[17,19.5],[18,22],
     [19,25],[22,26.3],[24,28],[1,21],[4,21],[4,23.5],[5,26.5],[8,28],[10,26],[10.5,23],
     [10.8,20],[10,17.3],[8.5,15],[6.1,16.4],[6,19],[14,20]
 ];
@@ -279,17 +271,13 @@ const chancePool = [
     {id: "chc_chameleon", name: "變色章魚", desc: "【現實任務】偽裝成功！卡牌放在頭頂不得公布。若被敵方指認，立即跳轉至敵方陣營回合；被同隊指出則跳轉到自己陣營回合。成功抓到提示的人得 5 積分。" },
     {id: "chc_silent", name: "墨不作聲", desc: "【現實任務】立刻公布！直到你的下一回合開始前，你在現實中完全不能說話，只能用肢體語言溝通。如果破功講話，下一回合直接被跳過！" },
     {id: "chc_anglertrap", name: "鮟心設陷", desc: "【現實任務】不得公布！在回到你的下一回合前，利用各種現實話題引導或誘使「其他玩家」跟你講話。成功則你得 2 分；失敗（沒人理你）則其他陣營所有人各得 1 分。" },
-    {id: "chc_sealove", name: "藻到幸福", desc: "【現實任務】立刻計時！除了你之外，所有人必須在 10 秒內在現場找到一個「綠色」物品拍照。超時失敗的人，下一輪將暫停一回合！" },
+    {id: "chc_sealove", name: "藻到幸福", desc: "【現實任務】立刻計時！除了你之外，所有人必須在 10秒內在現場找到一個「綠色」物品拍照。超時失敗的人，下一輪將暫停一回合！" },
     {id: "chc_cockroach", name: "蟑口結舌", desc: "【現實任務】保留此牌。在結算前的任何時間，突然毫無預警大叫「海蟑螂！」。若現場任何敵方玩家被嚇到（抖一下或驚呼），你的陣營加 3 分；失敗則扣 2 分。" },
     {id: "chc_crabclash", name: "夾蟹相逢", desc: "【現實任務】立刻公布！選擇一位敵方玩家進行沙灘猜拳大對決（三戰兩勝），獲勝者的陣營立刻獲得 1 積分。" },
     {id: "chc_salmon", name: "鮭矩繁多", desc: "【現實任務】直到你的下下回合結束前，你現實中講話絕對不能提到「你」、「我」、「他」這三個字！被指認抓到一次，指認者陣營得 1 分；完美撐過則獲得 4 積分。" },
     {id: "chc_squid", name: "小魷看頭", desc: "【現實任務】與一名敵方玩家同時在背後比出 1~5 隻手指。數到三同時伸出，相加總和為「奇數」你陣營得 2 分；「偶數」則對方陣營得 2 分。" },
     {id: "chc_mimic", name: "擬態蛸雄", desc: "【現實任務】暗中用手機紀錄並選擇一張卡片。在下一回合結束前，若有其他玩家打出該卡，其效果立刻轉移到你身上，且對手回合強制中斷，直接換你行動！" },
     {id: "chc_seaexplosion", name: "海得是你", desc: "【現實任務】不得公布的聲音陷阱卡！潛伏在桌邊，當現場因戰局笑聲或驚呼達到最高潮時，立刻砸牌大喊「海得是你！」。所有正在大笑或說話的玩家，全部扣 2 點生命值！" },
-    {id: "chc_sonar", name: "聲納干擾", desc: "干擾波來襲！干擾下一位玩家丟骰子的引導雷達，使其下一輪最多只能前進 1 格。" },
-    {id: "chc_tide", name: "湧浪奔襲", desc: "海流順風！獲得額外向前推進 2 格並自動觸發拾取垃圾的機會。" },
-    {id: "chc_lucky", name: "幸運海星", desc: "幸運眷顧！當前玩家可以從海底卡池中免費再多抽一張神秘卡片。" },
-    {id: "chc_treasure", name: "海底寶藏", desc: "發現古老沉船金幣！你所在的陣營積分直接獲得 3 分！" }
 ];
 
 const destinyPool=[
@@ -439,13 +427,13 @@ function updateUI() {
     const p = activePlayers[currentTurnPlayer];
     if (p.isBot) {
         document.getElementById("hand-cards").innerHTML = "<div style='color:var(--text-muted); font-size:12px; padding:5px; text-align:center; width:100%;'>⚙️ 電腦思考中...</div>";
+        document.getElementById("roll-btn").disabled = true;
     } else { 
         renderHand(); 
+        // 只有當尚未擲骰子且不處於虛弱受困狀態時，才開放按鈕
         if (p.hp <= 0) {
             document.getElementById("roll-btn").disabled = true;
             document.getElementById("roll-btn").innerText = "受困中";
-        } else {
-            document.getElementById("roll-btn").innerText = "🎲 擲骰子";
         }
     }
     checkAllGarbageCleared();
@@ -457,11 +445,14 @@ function rollDice() {
     closeDrawer();
     const p = activePlayers[currentTurnPlayer];
     if (p.hp <= 0) { showMsg("你正處於虛弱狀態，無法移動！請尋求隊友救援或使用生命卡復活。"); endTurn(); return; }
+    
+    // 【核心修正】點擊擲骰子後立刻完全鎖死按鈕，直到回合結束
+    document.getElementById("roll-btn").disabled = true;
+
     if (p.trap) { showMsg(`${p.name} 順利脫困！本回合無法移動。`); p.trap = false; endMovePhase(); return; }
     let m = globalSonarEffect > 0 ? 1 : globalMaxSteps;
     const dice = Math.floor(Math.random() * m) + 1;
     document.getElementById("dice-result").innerText = `🎲 : ${dice} 步`;
-    document.getElementById("roll-btn").disabled = true;
     remainingSteps = dice;
     onPathSelectionComplete = () => { checkGrid(p); endMovePhase(); };
     executeStepByStep(p);
@@ -519,6 +510,7 @@ function playerTokenClicked(targetPlayerId, event) {
         if (target.team === p.team && target.hp <= 0) {
             target.hp = 5;
             p.hand.splice(selectedCardIndex, 1); p.hand.push(cardPool[Math.floor(Math.random()*cardPool.length)]);
+            selectedCardIndex = null;
             closeDrawer(); renderHand(); updateUI();
             showMsg(`🐋 遠程神聖救援！${p.name} 使用鯨心膽跳成功復活了虛弱的隊友 ${target.name}！`);
             endTurn();
@@ -545,6 +537,7 @@ function playerTokenClicked(targetPlayerId, event) {
                     dropAllPlayerGarbage(target);
                 }
                 p.hand.splice(selectedCardIndex, 1); p.hand.push(cardPool[Math.floor(Math.random()*cardPool.length)]);
+                selectedCardIndex = null;
                 renderHand(); updateUI(); showMsg(msg); endTurn();
             });
         };
@@ -555,6 +548,7 @@ function playerTokenClicked(targetPlayerId, event) {
         if (target.bag.length > 0 && p.bag.length < 3) {
             const stolen = target.bag.pop(); p.bag.push(stolen);
             p.hand.splice(selectedCardIndex, 1); p.hand.push(cardPool[Math.floor(Math.random()*cardPool.length)]);
+            selectedCardIndex = null;
             renderHand(); updateUI(); showMsg(`🦈 冰凍鯊強奪 ${target.name} 背包內的 ${stolen.name}！`); endTurn();
         } else { alert("條件不符(對方背包是空的，或你的背包已滿)！"); renderHand(); updateUI(); }
     }
@@ -570,12 +564,19 @@ function dropAllPlayerGarbage(player) {
 }
 
 function endMovePhase() {
+    // 【核心修正】移動完畢後，擲骰子按鈕依然保持 disabled，不可重複點擊
+    document.getElementById("roll-btn").disabled = true;
     updateUI(); 
     if (globalSonarEffect > 0) globalSonarEffect--;
     globalMaxSteps = 3;
     const p = activePlayers[currentTurnPlayer];
-    if (p.isBot) { setTimeout(() => { botPlayCardPhase(p); }, 600); } 
-    else { document.getElementById("card-btn").disabled = true; document.getElementById("discard-btn").disabled = true; setTimeout(() => { document.getElementById("dice-result").innerText = ""; }, 1200); }
+    if (p.isBot) { 
+        setTimeout(() => { botPlayCardPhase(p); }, 600); 
+    } else { 
+        document.getElementById("card-btn").disabled = true; 
+        document.getElementById("discard-btn").disabled = true; 
+        setTimeout(() => { document.getElementById("dice-result").innerText = ""; }, 1200); 
+    }
 }
 
 function checkGrid(player) {
@@ -592,30 +593,14 @@ function checkGrid(player) {
         } else { if(!player.isBot) showMsg(`⚠️ 這裡是其他陣營的回收站，無法卸載垃圾！`); }
     }
     if(c.type === "event-cell" || c.name === "!") {
-        const ch = chancePool[Math.floor(Math.random()*chancePool.length)]; 
-        if (ch.id === "chc_seaexplosion") {
-            activePlayers.forEach(pl => {
-                if (pl.id !== player.id && Math.random() > 0.4) {
-                    pl.hp = Math.max(0, pl.hp - 2);
-                    if (pl.hp <= 0) dropAllPlayerGarbage(pl);
-                }
-            });
-            showMsg(`⚡【機會】${ch.name}\n${ch.desc}\n\n📢 突襲巨響傳出！戰場生命值重新刷新！`);
-            updateUI();
-            return;
-        }
-
-        showMsg(`⚡【機會】${ch.name}\n${ch.desc}`);
-        if(ch.id === "chc_sonar") { globalSonarEffect = 1; }
-        else if(ch.id === "chc_tide") { remainingSteps = 2; onPathSelectionComplete = () => { checkGrid(player); }; executeStepByStep(player); }
-        else if(ch.id === "chc_lucky") { player.hand.push(cardPool[Math.floor(Math.random() * cardPool.length)]); }
-        else if(ch.id === "chc_treasure") { teams[player.team].score += 3; updateUI(); }
+        const e = chancePool[Math.floor(Math.random()*chancePool.length)]; showMsg(`🎲【機會】${e.name}\n${e.desc}`);
+            // 注意：機會卡的效果需要在玩家回合內持續追蹤和實現，這裡僅展示抽卡提示，具體效果的實現需要在相關遊戲邏輯中進行額外處理。
     }
     if(c.type === "destiny-cell" || c.name === "?") {
         const d = destinyPool[Math.floor(Math.random()*destinyPool.length)]; showMsg(`🔮【命運】${d.name}\n${d.desc}`);
         if(d.id === "dst_flow") { remainingSteps = 3; onPathSelectionComplete = () => { checkGrid(player); }; executeStepByStep(player); }
         else if(d.id === "dst_fall") { globalMaxSteps = 1; }
-        else if(d.id === "dst_caught") { let maxScore = Math.max(...teams.map(t => t.score)); activePlayers.forEach(p => { if(teams[p.team].score === maxScore) p.trap = true; }); }
+        else if(d.id === "dst_net") { let maxScore = Math.max(...teams.map(t => t.score)); activePlayers.forEach(p => { if(teams[p.team].score === maxScore) p.trap = true; }); }
         else if(d.id === "dst_blessing") { player.hp = Math.min(5, player.hp + 1); }
         else if(d.id === "dst_urchin") { 
             player.hp = Math.max(0, player.hp - 1); 
@@ -665,7 +650,11 @@ function checkBotTurn() {
         }
         setTimeout(rollDice, 1000); 
     } else { 
-        if (p.hp > 0) document.getElementById("roll-btn").disabled = false; 
+        // 【核心修正】只有完全進入新玩家回合時，若該玩家不是虛弱狀態，才開放擲骰子
+        if (p.hp > 0) {
+            document.getElementById("roll-btn").disabled = false;
+            document.getElementById("roll-btn").innerText = "🎲 擲骰子";
+        }
     } 
 }
 
@@ -686,6 +675,7 @@ function botPlayCardPhase(botPlayer) {
             humanTarget.hp = Math.max(0, humanTarget.hp - 2);
             let extra = ""; if(humanTarget.hp <= 0) { extra = " 進入虛弱！"; dropAllPlayerGarbage(humanTarget); }
             botPlayer.hand.splice(shrimpIndex, 1); botPlayer.hand.push(cardPool[Math.floor(Math.random()*cardPool.length)]);
+            selectedCardIndex = null;
             showMsg(`🦐 爆炸蝦偷襲了 ${humanTarget.name} (-2HP)${extra}！`); updateUI(); endTurn();
         });
         return;
@@ -713,13 +703,14 @@ function executeDefense(choice) {
     const ctx = currentAttackContext; if (!ctx) return;
     if (choice === "turtle") {
         ctx.target.hand.splice(ctx.hasTurtle, 1); ctx.target.hand.push(cardPool[Math.floor(Math.random() * cardPool.length)]);
-        ctx.target.position = ctx.target.team === 0 ? 32 : (ctx.target.team === 1 ? 14 : 0);
+        ctx.target.position = ctx.target.team === 0 ? 3 : (ctx.target.team === 1 ? 26 : 33);
         showMsg(`🛡️ ${ctx.target.name} 使用【🐢 槓龜】彈回基地。`); checkGrid(ctx.target);
     } else if (choice === "octopus") {
         ctx.target.hand.splice(ctx.hasOctopus, 1); ctx.target.hand.push(cardPool[Math.floor(Math.random() * cardPool.length)]);
         ctx.attacker.trap = true; showMsg(`🛡️ ${ctx.target.name} 發動【🐙 章魚墨客】使 ${ctx.attacker.name} 暫停。`);
     } else { ctx.onNoDefense(); return; }
     ctx.attacker.hand.splice(selectedCardIndex, 1); ctx.attacker.hand.push(cardPool[Math.floor(Math.random() * cardPool.length)]);
+    selectedCardIndex = null;
     currentAttackContext = null; renderHand(); updateUI(); endTurn();
 }
 
@@ -747,11 +738,15 @@ function playCard() {
             onPathSelectionComplete = () => { checkGrid(p); };
             showMsg("滿血改為向前 1 步！"); executeStepByStep(p);
         }
-        p.hand.splice(selectedCardIndex, 1); p.hand.push(cardPool[Math.floor(Math.random()*cardPool.length)]); renderHand(); updateUI(); endTurn();
+        p.hand.splice(selectedCardIndex, 1); p.hand.push(cardPool[Math.floor(Math.random()*cardPool.length)]); 
+        selectedCardIndex = null;
+        renderHand(); updateUI(); endTurn();
     }
     else if(c.id === "whale") {
         activePlayers.forEach(pl => { if (pl.team === p.team) pl.hp = 5; });
-        p.hand.splice(selectedCardIndex, 1); p.hand.push(cardPool[Math.floor(Math.random()*cardPool.length)]); renderHand(); updateUI(); 
+        p.hand.splice(selectedCardIndex, 1); p.hand.push(cardPool[Math.floor(Math.random()*cardPool.length)]); 
+        selectedCardIndex = null;
+        renderHand(); updateUI(); 
         showMsg("🐋 鯨心膽跳！全隊生命值全滿復活！"); 
         endTurn();
     }
@@ -763,6 +758,7 @@ function playCard() {
             document.querySelector(`#cell-${p.position} .cell-info`).innerText = "";
             p.hp = Math.min(5, p.hp + 1); 
             p.hand.splice(selectedCardIndex, 1); p.hand.push(cardPool[Math.floor(Math.random()*cardPool.length)]);
+            selectedCardIndex = null;
             renderHand(); updateUI();
             showMsg(`🐟 垃圾清道夫吞噬了 ${targetGarbageName}，恢復 1 HP！`);
             endTurn();
@@ -785,6 +781,7 @@ function playCard() {
         }
         if (upgradedCount > 0) {
             p.hand.splice(selectedCardIndex, 1); p.hand.push(cardPool[Math.floor(Math.random()*cardPool.length)]);
+            selectedCardIndex = null;
             renderHand(); updateUI();
             showMsg(`🐚 相鄰格子內共 ${upgradedCount} 個吸管升級為 2 倍價值！`);
             endTurn();
@@ -802,12 +799,13 @@ function discardCard() {
     closeDrawer();
     const p = activePlayers[currentTurnPlayer]; const c = p.hand[selectedCardIndex];
     p.hand.splice(selectedCardIndex, 1); p.hand.push(cardPool[Math.floor(Math.random() * cardPool.length)]);
+    selectedCardIndex = null; // 【核心修正】重置 index 避免殘留引發 bug
     showMsg(`🗑️ 棄置了手牌：【${c.name}】`); renderHand(); updateUI(); endTurn();
 }
 
 function endTurn() {
     currentTurnPlayer = (currentTurnPlayer + 1) % activePlayers.length; selectedCardIndex = null; isSelectingAttackTarget = false;
-    document.getElementById("roll-btn").disabled = false; document.getElementById("card-btn").disabled = true; document.getElementById("discard-btn").disabled = true; document.getElementById("dice-result").innerText = "";
+    document.getElementById("card-btn").disabled = true; document.getElementById("discard-btn").disabled = true; document.getElementById("dice-result").innerText = "";
     closeDrawer(); updateUI(); checkBotTurn();
 }
 
